@@ -1,0 +1,118 @@
+/* Reset y tipografía */
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fondo con degradado */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f0cce, #6ee2e2);
+  color: #fff;
+}
+
+/* Contenedor principal */
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 90%;
+  max-width: 950px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+/* Caja de formulario */
+.form-box {
+  flex: 0 1 45%;
+  padding: 40px;
+  margin: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+}
+
+.form-box h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.form-box label {
+  display: block;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.form-box input, 
+.form-box textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.form-box textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Botón */
+.form-box button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border-radius: 10px;
+  border: none;
+  background: #1f0cce;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.form-box button:hover {
+  background: #6ee2e2;
+  color: #000;
+}
+
+/* Caja de información */
+.info-box {
+  flex: 0 1 45%;
+  padding: 40px;
+  margin: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.info-box h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.info-box p {
+  font-size: 16px;
+  color: #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.info-box img {
+  width: 150px;
+  border-radius: 50px;
+  box-shadow: 30px 5px 15px rgba(22, 204, 218, 0.4);
+}

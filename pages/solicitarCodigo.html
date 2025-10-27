@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de Código de Invitación</title>
+  <link rel="stylesheet" href="../css/stylesCodigoRegistro.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <h1>Solicitud de Código</h1>
+      <h2>Completa los datos</h2>
+      <form action="../processes/solicitar_codigo.php" method="POST">
+        <label for="nombre_completo">Nombre completo</label>
+        <input type="text" id="nombre_completo" name="nombre_completo" placeholder="Ej: Juan Pérez" required>
+
+        <label for="estudios">Estudios realizados</label>
+        <input type="text" id="estudios" name="estudios" placeholder="Ej: Licenciatura en Educación" required>
+
+        <label for="experiencia">Experiencia docente</label>
+        <textarea id="experiencia" name="experiencia" rows="3" placeholder="Ej: 3 años dando clases en colegios"></textarea>
+
+        <label for="motivo">¿Por qué quieres ser docente en la plataforma?</label>
+        <textarea id="motivo" name="motivo" rows="3" required></textarea>
+
+        <button type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

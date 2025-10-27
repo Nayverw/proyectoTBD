@@ -1,0 +1,185 @@
+/* Reset y tipografía */
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fondo del body con degradado */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f0cce, #6ee2e2); /* degradado diagonal */
+  color: #fff; /* texto blanco por defecto */
+}
+
+/* Contenedor principal */
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 90%;
+  max-width: 950px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05); /* ligera transparencia */
+  backdrop-filter: blur(10px); /* efecto de vidrio */
+}
+
+/* Caja de formulario */
+.form-box {
+  flex: 0 1 45%;
+  padding: 40px;
+  margin: 10px;
+  background: rgba(0, 0, 0, 0.3); /* fondo semitransparente */
+  border-radius: 15px;
+}
+
+.form-box h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.form-box h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+/* Inputs */
+.form-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0 20px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+/* Caja de información */
+.info-box {
+  flex: 0 1 45%;
+  padding: 40px;
+  margin: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.info-box h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.info-box p {
+  font-size: 16px;
+  color: #e0e0e0;
+  margin-bottom: 20px;
+}
+
+/* Imagen */
+.info-box img {
+  font-size: 50px;
+  width: 300px;
+  border-radius: 50px;
+  box-shadow: 30px 5px 15px rgba(22, 204, 218, 0.4);
+}
+
+/* Botones opcionales si los agregas */
+.form-box button {
+  width: 100%; /* que ocupe todo el ancho */
+  padding: 12px;
+  margin-top: 20px; /* separarlo un poco de los inputs */
+  border-radius: 10px;
+  border: none;
+  background: #1f0cce;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Estilo para el select y el campo de código */
+.form-box select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0 20px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+
+.form-box button:hover {
+  background: #6ee2e2;
+  color: #000;
+}
+
+/* Campo de código oculto por defecto */
+#campoCodigo {
+  display: none;
+}
+
+#campoCodigo p {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#campoCodigo a {
+  color: #6ee2e2;
+  text-decoration: underline;
+}
+
+/* =============================== */
+/* Mensaje flotante */
+#mensaje-flotante {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f0cce; /* color principal */
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  opacity: 0; /* inicialmente invisible */
+  z-index: 1000;
+  font-weight: 600;
+  transition: opacity 0.5s ease;
+}
+
+/* =============================== */
+/* Botón volver fijo en esquina inferior izquierda */
+#btn-volver {
+  display: inline-block;
+  position: relative;
+  top: 352px; /* mantiene la altura alineada con Registrarse */
+  left: 0;   /* lo lleva hacia la izquierda del div */
+  background: #6ee2e2;
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+#btn-volver:hover {
+  background: #1f0cce;
+  color: #fff;
+}
+

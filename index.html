@@ -1,0 +1,38 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLASSCLOUD - Iniciar sesión</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="form-box">
+      <h1 class="class">CLASSCLOUD</h1>
+      <h2>Iniciar Sesión</h2>
+      <p class="parrafo1">Usa tu correo institucional y contraseña</p>
+
+      <!-- Formulario -->
+      <form action="processes/login.php" method="POST">
+        <input type="email" name="correo" placeholder="Correo institucional" required>
+        <input type="password" name="contrasena" placeholder="Contraseña" required>
+        <button type="submit">INICIAR SESIÓN</button>
+      </form>
+
+      <p class="forgot">¿Olvidaste tu contraseña?</p>
+    </div>
+
+    <div class="info-box">
+      <img src="img/inicio.jpg" alt="Imagen decorativa" width="150">
+      <h2>¡Bienvenido!</h2>
+      <p>Regístrate para disfrutar todas las funciones de nuestra plataforma educativa.</p>
+      <a href="pages/regis.html">
+        <button>REGISTRARSE</button>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

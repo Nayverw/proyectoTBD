@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REGISTRO</title>
+    <link rel="stylesheet" href="../css/styles_registro.css">
+</head>
+<body>
+    <div class="container">
+
+        <!-- Caja de información -->
+        <div class="info-box">
+            <h2>¡Bienvenido!</h2>
+            <p>Empecemos con el registro<br>
+               Este es el primer paso para <br>
+               empezar tu camino en el <br>
+               aprendizaje en la plataforma<br></p>
+            <p>CLASSCLOUD</p>
+            <img src="../img/registro.jpg" alt="Imagen decorativa" width="150">
+            <button id="btn-volver" onclick="window.location.href='../index.html'">Volver</button>
+        </div>
+
+        <!-- Caja de formulario -->
+        <div class="form-box">
+            <h1>Bienvenido al registro</h1>
+            <h2>Ingresa tus datos</h2>
+            <form id="form-registro" action="../processes/registro.php" method="POST">
+                <label for="Nombre">Nombre</label>
+                <input name="Nombre" id="Nombre" type="text" placeholder="Nombre" required>
+
+                <label for="Apellido">Apellido</label>
+                <input name="Apellido" id="Apellido" type="text" placeholder="Apellido" required>
+
+                <label for="Correo_Electronico">Correo Electrónico</label>
+                <input name="email" id="Correo_Electronico" type="email" placeholder="Email" required>
+
+                <label for="Contrasenia">Contraseña</label>
+                <input name="contrasenia" id="Contrasenia" type="password" placeholder="Contraseña" required>
+
+                <label for="fecha">Fecha de nacimiento</label>
+                <input name="fecha" id="fecha" type="date" placeholder="Fecha de nacimiento" required>
+
+                <label for="telefono">Teléfono</label>
+                <input name="telefono" id="telefono" type="text" placeholder="Ej: 77777777" required>
+
+                <label for="rol">Selecciona tu rol</label>
+                <select name="rol" id="rol">
+                    <option value="Estudiante">Estudiante</option>
+                    <option value="Docente">Docente</option>
+                </select>
+
+                <!-- Campo de código solo para docentes -->
+                <div id="campoCodigo" style="display: none;">
+                    <label for="codigo_invitacion">Código de invitación (solo docentes)</label>
+                    <input name="codigo_invitacion" id="codigo_invitacion" type="text" placeholder="Ingrese el código">
+                    <p>
+                        ¿No tienes un código? 
+                        <a href="solicitarCodigo.html">Adquirir código de invitación</a>
+                    </p>
+                </div>
+
+                <button type="submit">Registrarse</button>
+            </form>
+        </div>
+
+    </div> <!-- fin container -->
+
+    <!-- Mensaje flotante -->
+    <div id="mensaje-flotante" style="display:none;">Registro exitoso en ClassCloud</div>
+
+    <!-- JS externo -->
+    <script src="../scripts/registro.js"></script>
+
+</body>
+</html>

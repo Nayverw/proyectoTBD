@@ -1,0 +1,247 @@
+/* ======== ESTILOS GENERALES ======== */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #247580;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 0.8fr 2.4fr 0.8fr;
+  height: 100vh;
+}
+
+/* ======== BLOQUE IZQUIERDO ======== */
+.left-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.left-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  font-size: 38px;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.menu-box {
+  background-color: #13F2C8;
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 80%;
+}
+
+.menu-btn {
+  background-color: #06B897;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 0;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+}
+
+.menu-btn:hover {
+  background-color: #04a283;
+  transform: scale(1.05);
+}
+
+/* ======== BLOQUE CENTRAL ======== */
+.center-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 70%;
+  background-color: #A1E3E3;
+  border-radius: 25px;
+  padding: 5px 10px;
+  margin-bottom: 40px;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 10px;
+  outline: none;
+  color: #004444;
+  font-size: 16px;
+}
+
+.search-bar button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #004444;
+}
+
+.main-box {
+  background-color: white;
+  border-radius: 15px;
+  width: 85%;
+  height: 75%;
+  display: flex;
+  flex-wrap: wrap;           /* Permite varias filas */
+  justify-content: center;   
+  align-items: flex-start;
+  gap: 15px;                 /* Separación uniforme entre cursos */
+  padding: 15px;
+  overflow-y: auto;          /* Scroll vertical si hay muchos cursos */
+}
+
+/* ======== BLOQUE DERECHO ======== */
+.right-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+.icons-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.icon-square {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+/* Bloque superior de recompensas */
+.rewards-block {
+  background-color: #13F2C8;
+  border-radius: 20px;
+  margin-top: 25px;
+  padding: 15px;
+  width: 85%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rewards-title {
+  margin: 5px 0 10px 0;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+}
+
+.large-square {
+  width: 150px;
+  height: 150px;
+  background-color: white;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+/* Botón pequeño */
+.small-button {
+  background-color: #06B897;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  padding: 8px 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.small-button:hover {
+  background-color: #05a080;
+}
+
+/* Bloque inferior */
+.actions-block {
+  background-color: #13F2C8;
+  border-radius: 20px;
+  margin-top: 15px;
+  padding: 15px;
+  width: 85%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Reutilizo el mismo estilo de los botones de la izquierda */
+.menu-button {
+  background-color: #06B897;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 15px;
+  padding: 10px 20px;
+  margin: 8px 0;
+  cursor: pointer;
+  width: 120px;
+  text-align: center;
+}
+
+.menu-button:hover {
+  background-color: #05a080;
+}
+
+/* ======== RECTÁNGULOS DE CURSOS ======== */
+.curso-rectangulo {
+  background-color: #06B897;
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;        /* Altura uniforme */
+  max-height: 120px;
+  flex: 1 1 28%;            /* Ajuste automático según cursos por fila */
+  max-width: 250px;
+  min-width: 180px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.curso-rectangulo h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.curso-rectangulo p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.curso-rectangulo:hover {
+  transform: scale(1.05);
+  background-color: #05a080;
+}
