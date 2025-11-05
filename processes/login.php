@@ -27,12 +27,18 @@ if ($resultado && $resultado->num_rows === 1) {
 
     // 🔹 Comparar contraseñas (sin encriptar)
     if ($contrasena === $contrasenia_guardada) {
-        // Guardar en sesión (opcional)
+        // Guardar en sesión PHP (opcional)
         $_SESSION['correo'] = $correo;
         $_SESSION['id_rol_usuario'] = $id_rol_usuario;
 
-        // ✅ Redirigir a inicio.html enviando datos por URL
-        header("Location: ../pages/inicio.html?correo=" . urlencode($correo) . "&id_rol_usuario=" . $id_rol_usuario);
+        // 🔹 Guardar en sessionStorage usando JS y redirigir a inicio.html
+        echo "
+        <script>
+            sessionStorage.setItem('id_rol_usuario', '$id_rol_usuario');
+            sessionStorage.setItem('correo', '$correo');
+            window.location.href = '../pages/inicio.html';
+        </script>
+        ";
         exit();
     } else {
         mostrarError("Usuario o contraseña incorrecta", "La contraseña ingresada no es válida.");

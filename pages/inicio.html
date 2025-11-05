@@ -8,12 +8,13 @@
 </head>
 <body>
   <div class="container">
+    
     <!-- BLOQUE IZQUIERDO -->
     <div class="left-block">
       <div class="left-content">
         <h1 class="logo">ClassCloud</h1>
         <div class="menu-box">
-          <button class="menu-btn">Cursos</button>
+          <button class="menu-btn" id="btn-cursos">Cursos</button>
           <button class="menu-btn">Docentes</button>
           <button class="menu-btn">Recompensas</button>
           <button class="menu-btn">Insignias</button>
@@ -25,11 +26,36 @@
 
     <!-- BLOQUE CENTRAL -->
     <div class="center-block">
+
+      <!-- Barra de búsqueda -->
       <div class="search-bar">
         <input type="text" placeholder="Buscar..." />
         <button>🔍</button>
       </div>
-      <div class="main-box"></div>
+
+      <!-- Contenedor principal de bienvenida(Inicio) -->
+      <div id="main-box" class="main-box inicio">
+        <div class="bienvenida-container">
+          <div class="bienvenida-left">
+            <h2 id="bienvenida-usuario">Bienvenido, Usuario</h2>
+          </div>
+          <div class="bienvenida-right">
+            <p>Explora tus cursos y comienza a aprender hoy mismo.</p>
+          </div>
+       </div>
+      </div>
+      <!-- Contenedor cursos activos -->
+      <div id="cursos-inscritos-container" class="main-box cursos" style="display:none;">
+        <h2 class="cursos-titulo">Cursos Activos</h2>
+        <div id="cursos-inscritos" class="cursos-scroll"></div>
+      </div>
+      <!-- Contenedor cursos disponibles -->
+      <div id="cursos-disponibles-container" class="main-box cursos" style="display:none;">
+        <h2 class="cursos-titulo">Cursos disponibles</h2>
+        <div id="cursos-disponibles" class="cursos-scroll"></div>
+      </div>
+      <!-- Botón de volver al inicio -->
+      <button id="btn-volver" class="menu-btn" style="display:none; margin: 20px auto;">Volver al inicio</button>
     </div>
 
     <!-- BLOQUE DERECHO -->
@@ -40,21 +66,21 @@
         <div class="icon-square"></div>
       </div>
 
-      <!-- Bloque superior -->
       <div class="rewards-block">
         <h2 class="rewards-title">Recompensas y puntos</h2>
         <div class="large-square"></div>
         <button class="small-button">Canjear recompensas</button>
       </div>
 
-      <!-- Bloque inferior -->
       <div class="actions-block">
         <button class="menu-button">Logros</button>
         <button class="menu-button">Ranking</button>
         <button class="menu-button">Almacén</button>
       </div>
     </div>
+    
   </div>
+
   <script src="../scripts/cargarHome.js"></script>
 </body>
 </html>

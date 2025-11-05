@@ -100,18 +100,105 @@ body {
   color: #004444;
 }
 
+/* Contenedor de cursos con scroll horizontal */
+.cursos-titulo {
+  color: #004444;
+  font-size: 20px;
+  text-align: left;
+  width: 100%;
+  margin: 10px 0; 
+}
+.cursos-scroll {
+  display: flex;
+  flex-direction: row;       /* Horizontal */
+  gap: 15px;
+  overflow-x: auto;
+  width: 100%;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.cursos-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cursos-scroll::-webkit-scrollbar-thumb {
+  background-color: #06B897;
+  border-radius: 4px;
+}
+
+.cursos-scroll::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Ajustes de main-box para mantener la altura y scroll interno */
 .main-box {
   background-color: white;
   border-radius: 15px;
   width: 85%;
   height: 75%;
   display: flex;
-  flex-wrap: wrap;           /* Permite varias filas */
-  justify-content: center;   
-  align-items: flex-start;
-  gap: 15px;                 /* Separación uniforme entre cursos */
+  flex-direction: column;   /* Cambiamos para contener título + scroll horizontal */
   padding: 15px;
-  overflow-y: auto;          /* Scroll vertical si hay muchos cursos */
+  overflow-y: hidden;       /* Vertical oculto */
+  text-align: center;
+}
+.bienvenida-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;     /* Centra verticalmente */
+  height: 100%;            /* Ocupa todo el bloque principal */
+  gap: 50px;               /* Separación entre columnas */
+  font-family: "Georgia", "Times New Roman", serif; /* Letra formal */
+  text-align: center;       /* Centra el texto dentro de cada columna */
+}
+
+.bienvenida-left h2,
+.bienvenida-right p {
+  color: #004444;
+  margin: 0;
+}
+
+.bienvenida-left h2 {
+  font-size: 32px;
+  font-weight: normal;
+}
+
+.bienvenida-right p {
+  font-size: 22px;
+}
+
+
+/* ======== Cursos inscritos y disponibles ======== */
+#cursos-inscritos-container,
+#cursos-disponibles-container {
+  display: flex;
+  flex-wrap: wrap;              /* Muestra varias filas si es necesario */
+  justify-content: center;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 10px;
+  overflow: hidden;             /* Evita scroll vertical */
+}
+
+/* Botón "Volver al inicio" */
+#btn-volver {
+  display: block;
+  margin-top: 20px auto 10px auto;
+  background-color: #06B897;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 25px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#btn-volver:hover {
+  background-color: #05a080;
+  transform: scale(1.05);
 }
 
 /* ======== BLOQUE DERECHO ======== */
@@ -213,21 +300,17 @@ body {
 /* ======== RECTÁNGULOS DE CURSOS ======== */
 .curso-rectangulo {
   background-color: #06B897;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 15px;
   color: white;
   text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
+  width: 180px;                 /* Más pequeñas para que quepan */
+  height: 140px;                /* Más compactas */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  min-height: 120px;        /* Altura uniforme */
-  max-height: 120px;
-  flex: 1 1 28%;            /* Ajuste automático según cursos por fila */
-  max-width: 250px;
-  min-width: 180px;
+  transition: transform 0.2s, background-color 0.3s;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 

@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 include("../conexion.php"); // Conexión a la base de datos
 
-// Verificar si llega el parámetro
+// 🔹 Verificar parámetro obligatorio
 if (!isset($_GET['id_rol_usuario'])) {
     echo json_encode([
         "success" => false,
@@ -13,7 +13,7 @@ if (!isset($_GET['id_rol_usuario'])) {
 
 $id_rol_usuario = intval($_GET['id_rol_usuario']);
 
-// 🔹 Detectar si el usuario es estudiante o docente
+// 🔹 Obtener el tipo de rol del usuario
 $sqlRol = "
     SELECT r.nombre AS tipo_rol
     FROM ROL_USUARIO ru
@@ -33,14 +33,15 @@ if ($resultRol->num_rows === 0) {
     exit();
 }
 
-$tipo_rol = $resultRol->fetch_assoc()['tipo_rol'];
+$tipo_rol = strtoupper($resultRol->fetch_assoc()['tipo_rol']);
 $stmtRol->close();
 
-// 🔹 Dependiendo del rol, armamos la consulta
-if (strtoupper($tipo_rol) === 'ESTUDIANTE') {
-    // Consulta para estudiantes: cursos activos y progreso
+// 🔹 Armar la consulta según el rol
+if ($tipo_rol === 'ESTUDIANTE') {
+    // Cursos en los que está inscrito el estudiante
     $sql = "
         SELECT 
+            c.id_curso,
             tc.nombre_curso,
             i.progreso,
             c.estado
@@ -56,10 +57,70 @@ if (strtoupper($tipo_rol) === 'ESTUDIANTE') {
         ORDER BY 
             tc.nombre_curso ASC
     ";
-} elseif (strtoupper($tipo_rol) === 'DOCENTE') {
-    // Consulta para docentes: cursos activos que imparte
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_rol_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $cursos_inscritos = [];
+    while ($row = $result->fetch_assoc()) {
+        $cursos_inscritos[] = [
+            "id_curso" => $row["id_curso"],
+            "nombre_curso" => $row["nombre_curso"],
+            "progreso" => $row["progreso"],
+            "estado" => $row["estado"]
+        ];
+    }
+    $stmt->close();
+
+    // 🔹 Cursos disponibles (a los que NO está inscrito)
+    $sqlDisponibles = "
+        SELECT 
+            c.id_curso,
+            tc.nombre_curso,
+            c.estado
+        FROM 
+            CURSO c
+        JOIN 
+            TIPO_CURSO tc ON c.id_tipo_curso = tc.id_tipo_curso
+        WHERE 
+            c.estado = 'ACTIVO'
+            AND c.id_curso NOT IN (
+                SELECT id_curso FROM INSCRIPCION WHERE id_rol_usuario = ?
+            )
+        ORDER BY 
+            tc.nombre_curso ASC
+    ";
+
+    $stmtDisp = $conn->prepare($sqlDisponibles);
+    $stmtDisp->bind_param("i", $id_rol_usuario);
+    $stmtDisp->execute();
+    $resultDisp = $stmtDisp->get_result();
+
+    $cursos_disponibles = [];
+    while ($row = $resultDisp->fetch_assoc()) {
+        $cursos_disponibles[] = [
+            "id_curso" => $row["id_curso"],
+            "nombre_curso" => $row["nombre_curso"],
+            "estado" => $row["estado"]
+        ];
+    }
+    $stmtDisp->close();
+
+    // 🔹 Devolver ambos
+    echo json_encode([
+        "success" => true,
+        "rol" => "ESTUDIANTE",
+        "cursos_inscritos" => $cursos_inscritos,
+        "cursos_disponibles" => $cursos_disponibles
+    ]);
+
+} elseif ($tipo_rol === 'DOCENTE') {
+    // Cursos que imparte el docente
     $sql = "
         SELECT 
+            c.id_curso,
             tc.nombre_curso,
             c.estado
         FROM 
@@ -72,50 +133,34 @@ if (strtoupper($tipo_rol) === 'ESTUDIANTE') {
         ORDER BY 
             tc.nombre_curso ASC
     ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_rol_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $cursos_docente = [];
+    while ($row = $result->fetch_assoc()) {
+        $cursos_docente[] = [
+            "id_curso" => $row["id_curso"],
+            "nombre_curso" => $row["nombre_curso"],
+            "estado" => $row["estado"]
+        ];
+    }
+    $stmt->close();
+
+    echo json_encode([
+        "success" => true,
+        "rol" => "DOCENTE",
+        "cursos" => $cursos_docente
+    ]);
+
 } else {
     echo json_encode([
         "success" => false,
         "error" => "El tipo de rol no es válido (solo se admite ESTUDIANTE o DOCENTE)."
     ]);
-    exit();
 }
 
-// Ejecutar consulta de cursos
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_rol_usuario);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$cursos = [];
-while ($row = $result->fetch_assoc()) {
-    $cursoData = [
-        "nombre_curso" => $row["nombre_curso"],
-        "estado" => $row["estado"]
-    ];
-
-    // Solo los estudiantes tienen progreso
-    if (isset($row["progreso"])) {
-        $cursoData["progreso"] = $row["progreso"];
-    }
-
-    $cursos[] = $cursoData;
-}
-
-// 🔹 Devolver resultado
-if (count($cursos) > 0) {
-    echo json_encode([
-        "success" => true,
-        "rol" => $tipo_rol,
-        "cursos" => $cursos
-    ]);
-} else {
-    echo json_encode([
-        "success" => false,
-        "rol" => $tipo_rol,
-        "mensaje" => "No se encontraron cursos activos para este usuario."
-    ]);
-}
-
-$stmt->close();
 $conn->close();
 ?>
