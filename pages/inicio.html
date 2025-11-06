@@ -45,6 +45,8 @@
         <h2 class="rewards-title">Recompensas y puntos</h2>
         <div class="large-square"></div>
         <button class="small-button">Canjear recompensas</button>
+        <button class="small-button" id="btn-ver-puntos">Ver sistema de puntos</button>
+        <div id="puntos-info" style="margin-top:10px; color:#004444; text-align:center;"></div>
       </div>
 
       <!-- Bloque inferior -->
@@ -56,5 +58,40 @@
     </div>
   </div>
   <script src="../scripts/cargarHome.js"></script>
+
+  <script>
+function getParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
+
+const idRolUsuario = getParam('id_rol_usuario');
+
+document.getElementById('btn-ver-puntos').addEventListener('click', async () => {
+  if (!idRolUsuario) {
+    alert('No se encontró el id del usuario.');
+    return;
+  }
+  try {
+    const res = await fetch(`../processes/puntos.php?id_rol_usuario=${idRolUsuario}`);
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message || 'No se pudieron obtener los puntos.');
+      return;
+    }
+
+    const box = document.getElementById('puntos-info');
+    box.innerHTML = `
+      <b>Puntos actuales:</b> ${data.puntos.actuales}<br>
+      <b>Acumulados:</b> ${data.puntos.acumulados}<br>
+      <b>Gastados:</b> ${data.puntos.gastados}
+    `;
+  } catch (e) {
+    alert('Error consultando los puntos.');
+    console.error(e);
+  }
+});
+</script>
+
 </body>
 </html>
