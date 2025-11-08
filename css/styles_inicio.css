@@ -174,7 +174,7 @@ body {
 #cursos-inscritos-container,
 #cursos-disponibles-container {
   display: flex;
-  flex-wrap: wrap;              /* Muestra varias filas si es necesario */
+  flex-wrap: wrap;              
   justify-content: center;
   align-items: flex-start;
   gap: 15px;
@@ -304,8 +304,8 @@ body {
   padding: 15px;
   color: white;
   text-align: center;
-  width: 180px;                 /* Más pequeñas para que quepan */
-  height: 140px;                /* Más compactas */
+  width: 180px;                 
+  height: 140px;                
   display: flex;
   flex-direction: column;
   justify-content: space-between;
