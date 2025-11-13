@@ -28,6 +28,7 @@ if ($resultado && $resultado->num_rows === 1) {
     // 🔹 Comparar contraseñas (sin encriptar)
     if ($contrasena === $contrasenia_guardada) {
         // Guardar en sesión (opcional)
+        $_SESSION['id_usuario'] = $id_usuario;
         $_SESSION['correo'] = $correo;
         $_SESSION['id_rol_usuario'] = $id_rol_usuario;
 
