@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 07-11-2025 a las 18:21:24
+-- Tiempo de generación: 13-11-2025 a las 05:17:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -96,7 +96,10 @@ CREATE TABLE `bitacora` (
 
 INSERT INTO `bitacora` (`id_bitacora`, `accion`, `descripcion`, `tabla_afectada`, `id_rol_usuario`) VALUES
 (1, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 6),
-(2, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 7);
+(2, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 7),
+(3, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 7', 'INSCRIPCION', 1),
+(4, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 2', 'INSCRIPCION', 1),
+(5, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 6', 'INSCRIPCION', 1);
 
 -- --------------------------------------------------------
 
@@ -246,7 +249,7 @@ CREATE TABLE `gestion_puntos` (
 --
 
 INSERT INTO `gestion_puntos` (`id_gestion_puntos`, `total_puntos_acumulados`, `total_puntos_gastados`, `total_puntos_actuales`, `id_rol_usuario`) VALUES
-(1, 0, 0, 0, 1),
+(1, 30, 0, 30, 1),
 (2, 0, 0, 0, 6),
 (3, 0, 0, 0, 6),
 (4, 0, 0, 0, 7),
@@ -331,7 +334,10 @@ INSERT INTO `inscripcion` (`id_inscripcion`, `fecha_inscripcion`, `fecha_finaliz
 (1, '2025-10-26 23:07:58', NULL, 150, 'online', 0, 'activo', 1, 4),
 (2, '2025-10-26 23:07:58', NULL, 200, 'online', 0, 'activo', 2, 4),
 (4, '2025-10-01 00:00:00', NULL, 50, 'Presencial', 0, 'Activo', 4, 1),
-(5, '2025-10-01 00:00:00', NULL, 70, 'Presencial', 0, 'Activo', 5, 1);
+(5, '2025-10-01 00:00:00', NULL, 70, 'Presencial', 0, 'Activo', 5, 1),
+(6, '2025-11-07 20:59:10', NULL, 0, '0', 0, '0', 7, 1),
+(7, '2025-11-12 20:45:45', NULL, 0, '0', 0, '0', 2, 1),
+(8, '2025-11-13 02:15:31', NULL, 0, '0', 0, '0', 6, 1);
 
 --
 -- Disparadores `inscripcion`
@@ -364,6 +370,7 @@ CREATE TABLE `insignia` (
   `id_insignia` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `descripcion` varchar(100) NOT NULL,
+  `rol` varchar(15) NOT NULL DEFAULT 'Estudiante',
   `id_rareza` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -371,12 +378,17 @@ CREATE TABLE `insignia` (
 -- Volcado de datos para la tabla `insignia`
 --
 
-INSERT INTO `insignia` (`id_insignia`, `nombre`, `descripcion`, `id_rareza`) VALUES
-(1, '10 asistencias', 'Asiste a 10 clases de manera puntual', 1),
-(2, '1ra clase', 'Participa por primera vez en una clase', 1),
-(3, '5 cursos', 'Completa exitosamente 5 cursos', 3),
-(4, 'Promedio destacado', 'Obtén un promedio mayor a 90%', 4),
-(5, 'Mejor de la clase', 'Sé el estudiante número 1 en el ranking', 5);
+INSERT INTO `insignia` (`id_insignia`, `nombre`, `descripcion`, `rol`, `id_rareza`) VALUES
+(1, '10 asistencias', 'Asiste a 10 clases de manera puntual', 'Estudiante', 1),
+(2, '1ra clase', 'Participa por primera vez en una clase', 'Estudiante', 1),
+(3, '5 cursos', 'Completa exitosamente 5 cursos', 'Estudiante', 3),
+(4, 'Promedio destacado', 'Obtén un promedio mayor a 90%', 'Estudiante', 4),
+(5, 'Mejor de la clase', 'Sé el estudiante número 1 en el ranking', 'Estudiante', 5),
+(6, '10 clases dictadas', 'Dicta 10 clases completas', 'Docente', 4),
+(7, '1ra vez compartiendo', 'Dicta una clase por primera vez', 'Docente', 1),
+(8, '5 cursos', 'Completa cinco cursos completos', 'Docente', 3),
+(9, 'El maestro', 'Finaliza un curso con mas del 80% de estudiantes aprobados', 'Docente', 3),
+(10, 'Sabio de Sabios', 'Imparte 20 cursos', 'Docente', 5);
 
 -- --------------------------------------------------------
 
@@ -443,7 +455,9 @@ CREATE TABLE `obtener_insignia` (
 INSERT INTO `obtener_insignia` (`id_obtener_insignia`, `id_rol_usuario`, `id_insignia`) VALUES
 (1, 1, 1),
 (2, 1, 2),
-(3, 1, 3);
+(3, 1, 3),
+(4, 5, 6),
+(5, 5, 8);
 
 -- --------------------------------------------------------
 
@@ -1011,7 +1025,7 @@ ALTER TABLE `aula`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `canje_certificado`
@@ -1071,13 +1085,13 @@ ALTER TABLE `horario`
 -- AUTO_INCREMENT de la tabla `inscripcion`
 --
 ALTER TABLE `inscripcion`
-  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `insignia`
 --
 ALTER TABLE `insignia`
-  MODIFY `id_insignia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_insignia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `login`
@@ -1095,7 +1109,7 @@ ALTER TABLE `modulo`
 -- AUTO_INCREMENT de la tabla `obtener_insignia`
 --
 ALTER TABLE `obtener_insignia`
-  MODIFY `id_obtener_insignia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_obtener_insignia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
