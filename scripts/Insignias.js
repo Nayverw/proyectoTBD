@@ -1,3 +1,5 @@
+console.log("Insignias.js cargado correctamente.");
+
 export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   const contenedor = document.getElementById("contenido-central");
   contenedor.innerHTML = `<p style="padding:20px;">Cargando insignias...</p>`;
@@ -5,17 +7,30 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   fetch(`../processes/cargarInsigniasObtenidas.php?idRolUsuario=${idRolUsuario}`)
     .then(res => res.json())
     .then(data => {
-      if (!data.length) {
-        contenedor.innerHTML = `<p style="padding:20px;">No se han obtenido insignias aún.</p>`;
+      // 🟢 Si NO tiene insignias
+      if (!Array.isArray(data) || data.length === 0) {
+        contenedor.innerHTML = `
+          <div style="padding:20px; text-align:center;">
+            <p style="color:black; font-size:18px;">No tienes insignias obtenidas.</p>
+            <button class="menu-btn" id="btn-explorar">Explorar insignias</button>
+          </div>
+        `;
+
+        document.getElementById("btn-explorar").addEventListener("click", () => {
+          import("./Insignias-explorar.js").then(mod =>
+            mod.mostrarExplorar({ idRolUsuario, nombreUsuario })
+          );
+        });
+
         return;
       }
 
+      // 🟢 Si HAY insignias → tabla con estilo unificado
       let html = `
         <div style="padding:10px;">
-          <!-- Título -->
-          <h2 style="text-align:center; color:black; margin-bottom:15px;">Todas tus insignias obtenidas</h2>
-
-          <!-- Tabla de insignias -->
+          <h2 style="text-align:center; color:black; margin-bottom:15px;">
+            Todas tus insignias obtenidas
+          </h2>
           <div style="overflow-x:auto;">
             <table style="width:100%; min-width:600px; border:2px solid black; border-spacing:0; border-radius:8px;">
               <thead>
@@ -23,7 +38,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
                   <th style="padding:10px; border:1px solid black;">Nro</th>
                   <th style="padding:10px; border:1px solid black;">Rareza</th>
                   <th style="padding:10px; border:1px solid black;">Nombre</th>
-                  <th style="padding:10px; border:1px solid black;">Descripcion</th>
+                  <th style="padding:10px; border:1px solid black;">Descripción</th>
                 </tr>
               </thead>
               <tbody>
@@ -47,8 +62,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
             </table>
           </div>
 
-          <!-- Botón explorar insignias -->
-          <div style="margin-top:20px;">
+          <div style="margin-top:20px; text-align:center;">
             <button class="menu-btn" id="btn-explorar">Explorar insignias</button>
           </div>
         </div>
@@ -56,13 +70,11 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
       contenedor.innerHTML = html;
 
-      // Evento del botón para pasar al modo "explorar"
       document.getElementById("btn-explorar").addEventListener("click", () => {
-        import("./Insignias-explorar.js").then(module => {
-          module.mostrarExplorar({ idRolUsuario, nombreUsuario });
-        });
+        import("./Insignias-explorar.js").then(mod =>
+          mod.mostrarExplorar({ idRolUsuario, nombreUsuario })
+        );
       });
-
     })
     .catch(err => {
       contenedor.innerHTML = `<p style="padding:20px; color:red;">Error al cargar las insignias: ${err}</p>`;

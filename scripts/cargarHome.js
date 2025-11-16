@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     insignias: "Insignias",
     pagos: "Pagos",
     oferta: "Oferta",
+    seminarios: "Seminarios",       
+    foros: "Foros",
     canjear: "CanjearRecompensas",
+    gestionpuntos: "GestionPuntos",
     logros: "Logros",
     ranking: "Ranking",
     almacen: "Almacen"

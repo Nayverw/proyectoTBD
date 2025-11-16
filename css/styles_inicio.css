@@ -294,7 +294,9 @@ body {
 }
 
 .menu-button:hover {
-  background-color: #05a080;
+  background-color: #05a080; /* ya existente */
+  transform: scale(1.05);     /* agregar esta línea */
+  transition: background-color 0.3s, transform 0.2s; /* transición suave */
 }
 
 /* ======== RECTÁNGULOS DE CURSOS ======== */
@@ -412,4 +414,12 @@ body {
 
 .lista-alumnos li span {
   color: #444;              /* gris para correo */
+}
+
+.rewards-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  gap: 10px; /* separación uniforme entre elementos */
 }

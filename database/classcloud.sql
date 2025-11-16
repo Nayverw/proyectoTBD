@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 13-11-2025 a las 05:17:40
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 16-11-2025 a las 03:22:58
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -99,7 +99,19 @@ INSERT INTO `bitacora` (`id_bitacora`, `accion`, `descripcion`, `tabla_afectada`
 (2, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 7),
 (3, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 7', 'INSCRIPCION', 1),
 (4, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 2', 'INSCRIPCION', 1),
-(5, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 6', 'INSCRIPCION', 1);
+(5, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 6', 'INSCRIPCION', 1),
+(6, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 8),
+(7, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 9),
+(8, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 3', 'INSCRIPCION', 1),
+(9, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 10),
+(10, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 11),
+(11, 'INSERT', 'Ganó 10 puntos por inscribirse al curso ID 4', 'INSCRIPCION', 7),
+(12, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 12),
+(13, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 13),
+(14, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 14),
+(15, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 15),
+(16, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 16),
+(17, 'INSERT', 'Se creó registro de puntos para nuevo usuario.', 'ROL_USUARIO', 17);
 
 -- --------------------------------------------------------
 
@@ -171,6 +183,7 @@ CREATE TABLE `curso` (
   `preciopuntos` int(11) NOT NULL,
   `estado` varchar(255) NOT NULL,
   `duracion` int(11) NOT NULL,
+  `cupo` int(11) NOT NULL,
   `id_tipo_curso` int(11) NOT NULL,
   `id_docente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -179,14 +192,14 @@ CREATE TABLE `curso` (
 -- Volcado de datos para la tabla `curso`
 --
 
-INSERT INTO `curso` (`id_curso`, `preciopuntos`, `estado`, `duracion`, `id_tipo_curso`, `id_docente`) VALUES
-(1, 150, 'activo', 40, 1, 2),
-(2, 200, 'activo', 60, 2, 3),
-(3, 180, 'activo', 50, 3, 2),
-(4, 0, 'ACTIVO', 60, 4, 5),
-(5, 0, 'ACTIVO', 30, 5, 5),
-(6, 0, 'ACTIVO', 40, 2, 5),
-(7, 0, 'ACTIVO', 30, 1, 5);
+INSERT INTO `curso` (`id_curso`, `preciopuntos`, `estado`, `duracion`, `cupo`, `id_tipo_curso`, `id_docente`) VALUES
+(1, 150, 'activo', 40, 0, 1, 2),
+(2, 200, 'activo', 60, 0, 2, 3),
+(3, 180, 'activo', 50, 0, 3, 2),
+(4, 0, 'ACTIVO', 60, 0, 4, 5),
+(5, 0, 'ACTIVO', 30, 0, 5, 5),
+(6, 0, 'ACTIVO', 40, 0, 2, 5),
+(7, 0, 'ACTIVO', 30, 0, 1, 5);
 
 -- --------------------------------------------------------
 
@@ -249,11 +262,22 @@ CREATE TABLE `gestion_puntos` (
 --
 
 INSERT INTO `gestion_puntos` (`id_gestion_puntos`, `total_puntos_acumulados`, `total_puntos_gastados`, `total_puntos_actuales`, `id_rol_usuario`) VALUES
-(1, 30, 0, 30, 1),
+(1, 40, 0, 40, 1),
 (2, 0, 0, 0, 6),
 (3, 0, 0, 0, 6),
-(4, 0, 0, 0, 7),
-(5, 0, 0, 0, 7);
+(4, 10, 0, 10, 7),
+(5, 10, 0, 10, 7),
+(6, 0, 0, 0, 8),
+(7, 0, 0, 0, 8),
+(8, 0, 0, 0, 9),
+(9, 0, 0, 0, 10),
+(10, 0, 0, 0, 11),
+(11, 0, 0, 0, 12),
+(12, 0, 0, 0, 13),
+(13, 0, 0, 0, 14),
+(14, 0, 0, 0, 15),
+(15, 0, 0, 0, 16),
+(16, 0, 0, 0, 17);
 
 --
 -- Disparadores `gestion_puntos`
@@ -337,7 +361,9 @@ INSERT INTO `inscripcion` (`id_inscripcion`, `fecha_inscripcion`, `fecha_finaliz
 (5, '2025-10-01 00:00:00', NULL, 70, 'Presencial', 0, 'Activo', 5, 1),
 (6, '2025-11-07 20:59:10', NULL, 0, '0', 0, '0', 7, 1),
 (7, '2025-11-12 20:45:45', NULL, 0, '0', 0, '0', 2, 1),
-(8, '2025-11-13 02:15:31', NULL, 0, '0', 0, '0', 6, 1);
+(8, '2025-11-13 02:15:31', NULL, 0, '0', 0, '0', 6, 1),
+(9, '2025-11-14 00:15:27', NULL, 0, '0', 0, '0', 3, 1),
+(10, '2025-11-14 00:21:03', NULL, 0, '0', 0, '0', 4, 7);
 
 --
 -- Disparadores `inscripcion`
@@ -412,7 +438,17 @@ INSERT INTO `login` (`id_login`, `contrasenia`, `codigo`, `correo_institucional`
 (1, '123456', 'O8X58XCR', 'rosales@classcloud.edu.bo', 1),
 (2, '1234567', 'U8X68XCR', 'gonzales@classcloud.edu.bo', 5),
 (3, '123456', 'PR10Q8WY', 'usuarioprueba@classcloud.edu.bo', 6),
-(4, '12345678', 'C236JO5W', 'josue@classcloud.edu.bo', 7);
+(4, '12345678', 'C236JO5W', 'josue@classcloud.edu.bo', 7),
+(5, '123456', '6ADQEXHG', 'prueba@classcloud.edu.bo', 8),
+(6, '$2y$10$crMM.DA.1gDxsgE0nU', '1C5M73BA', 'pruebaaaaaaaaa@classcloud.edu.bo', 9),
+(7, '$2y$10$Ca/6oHyPhJfGfr/laF', 'TUVP6T4L', 'alegutierrez@classcloud.edu.bo', 10),
+(8, '$2y$10$p2TiqNGTfgFVoP9x8N', 'ARHLJ58J', 'alejandro@classcloud.edu.bo', 11),
+(9, '$2y$10$Acz9wvkRkhK78dNO4u', 'LVP7P13F', 'gustavin@classcloud.edu.bo', 12),
+(10, '12345678', '73EG4OX0', 'rosassss@classcloud.edu.bo', 13),
+(11, '12345678', '59W5LF4W', 'docente1@classcloud.edu.bo', 14),
+(12, '123456', '00WLE6I7', 'gustavinooo@classcloud.edu.bo', 15),
+(13, '123456', 'JLUFM8KX', 'pruebitaaadaa@classcloud.edu.bo', 16),
+(14, '123456789', 'KDHCIUPM', 'gustavoasda@classcloud.edu.bo', 17);
 
 -- --------------------------------------------------------
 
@@ -558,8 +594,17 @@ CREATE TABLE `recompensa` (
   `nombre` varchar(250) NOT NULL,
   `precio_puntos` int(11) NOT NULL,
   `descuento` int(11) DEFAULT NULL,
+  `rol` varchar(15) NOT NULL,
   `id_tipo_recompensa` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `recompensa`
+--
+
+INSERT INTO `recompensa` (`id_recompensa`, `nombre`, `precio_puntos`, `descuento`, `rol`, `id_tipo_recompensa`) VALUES
+(1, 'Cupón de 10% descuento', 100, 10, 'Estudiante', 1),
+(2, 'Certificado Extra', 200, NULL, 'Docente', 2);
 
 -- --------------------------------------------------------
 
@@ -628,7 +673,17 @@ INSERT INTO `rol_usuario` (`id_rol_usuario`, `id_usuario`, `id_rol`) VALUES
 (4, 4, 2),
 (5, 5, 2),
 (6, 6, 1),
-(7, 7, 1);
+(7, 7, 1),
+(8, 8, 1),
+(9, 9, 1),
+(10, 10, 1),
+(11, 11, 1),
+(12, 12, 1),
+(13, 13, 1),
+(14, 14, 2),
+(15, 15, 2),
+(16, 16, 2),
+(17, 17, 1);
 
 --
 -- Disparadores `rol_usuario`
@@ -711,6 +766,14 @@ CREATE TABLE `tipo_recompensa` (
   `nombre_tipo` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `tipo_recompensa`
+--
+
+INSERT INTO `tipo_recompensa` (`id_tipo_recompensa`, `nombre_tipo`) VALUES
+(1, 'Descuento'),
+(2, 'Certificado');
+
 -- --------------------------------------------------------
 
 --
@@ -739,7 +802,17 @@ INSERT INTO `usuario` (`id_usuario`, `nombres`, `apellidos`, `fecha_nacimiento`,
 (4, 'Andrea', 'Lopez', '1998-03-22', '1234570', 78965417, 'andrea.lopez@umss.edu.bo', 'activo'),
 (5, 'Jose', 'Gonzales', '1985-04-02', '9493439', 74329912, 'gonzales@gmail.com', 'Activo'),
 (6, 'usuarioprueba', 'prueba', '2025-02-28', '85672770', 45221332, 'usuarioprueba@gmail.com', 'Activo'),
-(7, 'josue', 'menacho', '2015-12-07', '97204434', 55555555, 'josue@gmail.com', 'Activo');
+(7, 'josue', 'menacho', '2015-12-07', '97204434', 55555555, 'josue@gmail.com', 'Activo'),
+(8, 'userprueba', 'prueba', '2018-01-19', '93049639', 66666666, 'prueba@gmail.com', 'Activo'),
+(9, 'preubaaaaa', 'pruebaaaaaaaa', '2025-10-29', '94813504', 44444446, 'pruebaaaaaaaaa@gmail.com', 'Activo'),
+(10, 'ale', 'gutierrez', '2003-05-23', '49173320', 65346232, 'alegutierrez@gmail.com', 'Activo'),
+(11, 'alejandro', 'guitierrez', '2025-02-13', '31416884', 67543354, 'alejandro@gmail.com', 'Activo'),
+(12, 'gustavo', 'garcia', '2025-09-26', '55609629', 69344522, 'gustavin@gmail.com', 'Activo'),
+(13, 'gusgus', 'prueba', '2025-11-20', '82157008', 65343433, 'rosassss@gmail.com', 'Activo'),
+(14, 'docente1', 'docente', '2025-10-08', '18843629', 64366233, 'docente1@gmail.com', 'Activo'),
+(15, 'gustavoooo', 'ahoraa', '2025-11-05', '70884022', 65346303, 'gustavinooo@gmail.com', 'Activo'),
+(16, 'pruebitaaa', 'prueaos', '2025-10-24', '92710355', 68220100, 'pruebitaaadaa@gmail.com', 'Activo'),
+(17, 'gustavoasda', 'EFcwwwer', '2025-11-05', '87452873', 67432905, 'gustavoasda@gamil.com', 'Activo');
 
 --
 -- Índices para tablas volcadas
@@ -1025,7 +1098,7 @@ ALTER TABLE `aula`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `canje_certificado`
@@ -1073,7 +1146,7 @@ ALTER TABLE `foro`
 -- AUTO_INCREMENT de la tabla `gestion_puntos`
 --
 ALTER TABLE `gestion_puntos`
-  MODIFY `id_gestion_puntos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_gestion_puntos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `horario`
@@ -1085,7 +1158,7 @@ ALTER TABLE `horario`
 -- AUTO_INCREMENT de la tabla `inscripcion`
 --
 ALTER TABLE `inscripcion`
-  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `insignia`
@@ -1097,7 +1170,7 @@ ALTER TABLE `insignia`
 -- AUTO_INCREMENT de la tabla `login`
 --
 ALTER TABLE `login`
-  MODIFY `id_login` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_login` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `modulo`
@@ -1139,7 +1212,7 @@ ALTER TABLE `rareza`
 -- AUTO_INCREMENT de la tabla `recompensa`
 --
 ALTER TABLE `recompensa`
-  MODIFY `id_recompensa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_recompensa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `requisito`
@@ -1151,7 +1224,7 @@ ALTER TABLE `requisito`
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `rol_permisos`
@@ -1163,7 +1236,7 @@ ALTER TABLE `rol_permisos`
 -- AUTO_INCREMENT de la tabla `rol_usuario`
 --
 ALTER TABLE `rol_usuario`
-  MODIFY `id_rol_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_rol_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `seminario`
@@ -1187,13 +1260,13 @@ ALTER TABLE `tipo_curso`
 -- AUTO_INCREMENT de la tabla `tipo_recompensa`
 --
 ALTER TABLE `tipo_recompensa`
-  MODIFY `id_tipo_recompensa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipo_recompensa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Restricciones para tablas volcadas

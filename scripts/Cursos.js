@@ -1,8 +1,8 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\Cursos.js
 export function iniciar({ idRolUsuario, nombreUsuario }) {
   // Referencias generales
-  const mainBox = document.getElementById("main-box");           // bloque blanco (no ocultar)
-  const contenidoCentral = document.getElementById("contenido-central"); // donde vamos a inyectar
+  const mainBox = document.getElementById("main-box");           
+  const contenidoCentral = document.getElementById("contenido-central"); 
   const btnVolver = document.getElementById("btn-volver");
 
   if (!mainBox || !contenidoCentral) {
