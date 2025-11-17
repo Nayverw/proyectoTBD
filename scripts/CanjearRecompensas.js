@@ -4,11 +4,11 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   const contenedor = document.getElementById("contenido-central");
 
   contenedor.innerHTML = `
-    <!-- CONTENEDOR 2 (panel principal) -->
     <div id="contenedor2"
       style="
         width: 92%;
-        height: 440px;
+        min-height: 440px;
+        max-height: 440px;   /* 🔥 evita deformación */
         background: white;
         margin: 25px auto;
         padding: 12px;
@@ -18,12 +18,11 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: hidden;     /* 🔥 bloquea expansión */
         box-sizing: border-box;
       "
     >
 
-      <!-- CONTENEDOR 1 (recompensas – scroll horizontal) -->
       <div id="contenedor1"
         style="
           width: 100%;
@@ -31,10 +30,9 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           background: #e5ffe5;
           border-radius: 10px;
           border: 1px solid #c7e8c7;
-          box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
-
           margin-bottom: 10px;
-          box-sizing: border-box;
+          padding: 10px;
+          box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
 
           display: flex;
           align-items: center;
@@ -44,13 +42,14 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           overflow-y: hidden;
           white-space: nowrap;
 
-          padding: 10px;
+          max-width: 100%;
+          max-height: 100%;      /* 🔥 no crece vertical */
+          flex: 0 0 auto;
         "
       >
-        <p style="padding-left: 10px; color: #555;">Cargando recompensas...</p>
+        <p style="color:#555;">Cargando recompensas...</p>
       </div>
 
-      <!-- Contenedor inferior -->
       <div id="contenedorInferior"
         style="
           width: 100%;
@@ -58,6 +57,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           padding: 15px;
           box-sizing: border-box;
           border-radius: 10px;
+          overflow: auto;       /* 🔥 evita que crezca */
         "
       >
         <h3 style="color:#444; margin-top:0;">Zona inferior (V2)</h3>
@@ -66,24 +66,18 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
     </div>
   `;
 
-  // ───────────────────────────────────────
-  // 1. Cargar recompensas desde PHP
-  // ───────────────────────────────────────
-
   fetch(`../processes/CanjearRecompensas.php?id_rol_usuario=${idRolUsuario}`)
     .then(res => res.json())
     .then(recompensas => {
       const cont1 = document.getElementById("contenedor1");
-      cont1.innerHTML = "";  // limpiar
+      cont1.innerHTML = "";
 
       if (!recompensas.length) {
-        cont1.innerHTML = `<p style="margin-left:10px; color:#444;">No hay recompensas disponibles.</p>`;
+        cont1.innerHTML =
+          `<p style="color:#444;">No hay recompensas disponibles.</p>`;
         return;
       }
 
-      // ───────────────────────────────────────
-      // 2. Crear visualización de cada recompensa
-      // ───────────────────────────────────────
       recompensas.forEach(r => {
         const item = document.createElement("div");
         item.style = `
@@ -100,7 +94,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           justify-content: center;
           text-align: center;
 
-          white-space: normal;
+          flex-shrink: 0;   /* 🔥 evita crecimiento horizontal */
         `;
 
         item.innerHTML = `
@@ -113,11 +107,9 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
         cont1.appendChild(item);
       });
-
     })
     .catch(err => {
-      console.error("Error cargando recompensas:", err);
       document.getElementById("contenedor1").innerHTML =
-        `<p style="margin-left:10px; color:red;">Error cargando recompensas.</p>`;
+        `<p style="color:red;">Error cargando recompensas.</p>`;
     });
 }
