@@ -32,8 +32,8 @@ if ($rolFiltro == "") {
     exit;
 }
 
-// 3. Obtener recompensas según rol
-$sqlRecomp = "SELECT id_recompensa, nombre, precio_puntos, descuento 
+// 3. Obtener recompensas según rol, incluyendo id_tipo_recompensa
+$sqlRecomp = "SELECT id_recompensa, nombre, precio_puntos, descuento, id_tipo_recompensa
               FROM RECOMPENSA 
               WHERE rol = ?";
 
