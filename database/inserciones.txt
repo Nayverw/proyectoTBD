@@ -1,1 +1,22 @@
 //aqui vendran todas las inseciones/inserts que hagas para probar tus funcionalidades
+
+INSERT INTO TIPO_RECOMPENSA (nombre_tipo)
+VALUES
+('Inscripcion'),
+('Certificado'),
+('Seminario'),
+('Regalo');
+
+INSERT INTO RECOMPENSA (nombre, precio_puntos, descuento, rol, id_tipo_recompensa)
+VALUES
+('Cupón de 10% descuento en cualquier inscripcion', 100, 10, 'Estudiante', 1),
+('Certificado Extra', 200, 100, 'Docente', 2),
+('Cupon de 30% de descuento en cualquier inscripcion', 250, 30, 'Estudiante', 1),
+('Cupon de 100% de descuento en cualquier inscripcion', 800, 100, 'Estudiante', 1),
+('Certificado Extra', 150, 100, 'Estudiante', 2),
+('Seminario Gratuito', 50, 100, 'Estudiante', 3),
+('Vale por 1 mouse', 150, 100, 'Docente', 4),
+('Vale por 1 mouse', 150, 100, 'Estudiante', 4),
+('Seminario Gratuito', 75, 100, 'Docente', 3),
+('Vale por 1 teclado', 350, 100, 'Docente', 4),
+('Vale por 1 teclado', 350, 100, 'Estudiante', 4);
