@@ -1,10 +1,133 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\Seminarios.js
+
 export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
+  console.log("Seminarios.js cargado correctamente.", { idRolUsuario, nombreUsuario });
+
   const contenedor = document.getElementById("contenido-central");
+
   contenedor.innerHTML = `
-    <div style="text-align:center; font-size:1.5em; color:#333; padding:40px;">
-      Lógica del botón <strong>Seminarios</strong> no implementada.<br>
-      (Usuario: <em>${nombreUsuario}</em>)
+    <div id="contenedorSeminarios" style="
+      width: 92%;
+      min-height: 480px;
+      background: white;
+      margin: 25px auto;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #ddd;
+      box-shadow: 0px 0px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: #247580;
+    ">
+
+      <h2 style="text-align:center; color:white; margin-bottom:15px;">
+        Tus seminarios inscritos
+      </h2>
+
+      <!-- CONTENEDOR SUPERIOR IGUAL A contenedor1 -->
+      <div id="contenedorSuperior" style="
+        width: 100%;
+        height: 50%;
+        background: #13F2C8;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+      ">
+        <p style="color:white;">Cargando seminarios inscritos...</p>
+      </div>
+
+      <h2 style="text-align:center; color:white; margin-bottom:15px;">
+        Seminarios de tus cursos
+      </h2>
+
+      <!-- CONTENEDOR INFERIOR IGUAL A contenedor1 -->
+      <div id="contenedorInferiorSeminarios" style="
+        width: 100%;
+        height: 50%;
+        background: #13F2C8;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+      ">
+        <p style="color:white;">No hay seminarios disponibles.</p>
+      </div>
+
+      <button id="btnExplorarSeminarios" style="
+        background-color: #06B897;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 0;
+        font-size: 15px;
+        cursor: pointer;
+        transition: .2s;
+        width: 100%;
+        margin-top: 15px;
+      "
+      onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
+      onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'">
+        Explorar seminarios
+      </button>
+
     </div>
   `;
+
+  console.log("Fetch SeminariosInscritos iniciado...");
+
+  fetch(`../processes/SeminariosInscritos.php?id_rol_usuario=${idRolUsuario}`)
+    .then(res => res.json())
+    .then(seminarios => {
+      console.log("Seminarios recibidos:", seminarios);
+
+      const contSup = document.getElementById("contenedorSuperior");
+      contSup.innerHTML = "";
+
+      if (!seminarios.length) {
+        contSup.innerHTML = `<p style="color:white;">No tienes seminarios inscritos.</p>`;
+        return;
+      }
+
+      seminarios.forEach(s => {
+        const item = document.createElement("div");
+        item.dataset.idSeminario = s.id_seminario;
+
+        item.style = `
+          min-width: 120px;
+          height: 120px;
+          background: #B3FFFC;
+          border-radius: 10px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          text-align: center;
+          flex-shrink: 0;
+        `;
+
+        item.innerHTML = `
+          <strong style="font-size:14px; color:black;">${s.nombre}</strong>
+          <img src="../img/seminario.jpg" alt="${s.nombre}"
+            style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
+        `;
+
+        contSup.appendChild(item);
+      });
+
+    })
+    .catch(err => {
+      console.error("Error cargando seminarios:", err);
+      document.getElementById("contenedorSuperior").innerHTML =
+        `<p style="color:red;">Error cargando seminarios.</p>`;
+    });
 }
