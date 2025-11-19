@@ -4,7 +4,7 @@ body {
   padding: 0;
   background-color: #247580;
   font-family: Arial, sans-serif;
-  color: rgb(14, 11, 11);
+  color: white;
 }
 
 .container {
@@ -100,26 +100,42 @@ body {
   color: #004444;
 }
 
-/* Contenedor de cursos con scroll horizontal */
-.cursos-titulo {
-  color: #004444;
-  font-size: 20px;
-  text-align: left;
-  width: 100%;
-  margin: 10px 0; 
-}
-.cursos-scroll {
+/* ===== Contenedor general de cursos ===== */
+#cursos-inscritos-container {
   display: flex;
-  flex-direction: row;       /* Horizontal */
-  gap: 15px;
-  overflow-x: auto;
-  width: 100%;
-  padding-bottom: 10px;
-  scroll-behavior: smooth;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 15px;
+  padding: 0;
+}
+
+/* ======== CONTENEDOR DE CURSOS ======== */
+.cursos-titulo {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  color: #004444;
+  padding: 0px 0;
+  margin: 0;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Contenedor de tarjetas */
+.cursos-scroll {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  overflow-y: auto;
+  flex: 1;
+  padding: 20px;
+  max-height: calc(100% - 50px);
 }
 
 .cursos-scroll::-webkit-scrollbar {
-  height: 8px;
+  width: 8px;
 }
 
 .cursos-scroll::-webkit-scrollbar-thumb {
@@ -132,26 +148,27 @@ body {
   border-radius: 4px;
 }
 
-/* Ajustes de main-box para mantener la altura y scroll interno */
+/* ======== MAIN BOX ======== */
 .main-box {
   background-color: white;
   border-radius: 15px;
   width: 85%;
   height: 75%;
   display: flex;
-  flex-direction: column;   /* Cambiamos para contener título + scroll horizontal */
-  padding: 15px;
-  overflow-y: hidden;       /* Vertical oculto */
-  text-align: center;
+  flex-direction: column;   
+  padding: 20px;
+  overflow-x: hidden;
 }
+
+/* ======== BIENVENIDA ======== */
 .bienvenida-container {
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center;     /* Centra verticalmente */
-  height: 100%;            /* Ocupa todo el bloque principal */
-  gap: 50px;               /* Separación entre columnas */
-  font-family: "Georgia", "Times New Roman", serif; /* Letra formal */
-  text-align: center;       /* Centra el texto dentro de cada columna */
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 50px;
+  font-family: "Georgia", "Times New Roman", serif;
+  text-align: center;
 }
 
 .bienvenida-left h2,
@@ -169,23 +186,10 @@ body {
   font-size: 22px;
 }
 
-
-/* ======== Cursos inscritos y disponibles ======== */
-#cursos-inscritos-container,
-#cursos-disponibles-container {
-  display: flex;
-  flex-wrap: wrap;              
-  justify-content: center;
-  align-items: flex-start;
-  gap: 15px;
-  padding: 10px;
-  overflow: hidden;             /* Evita scroll vertical */
-}
-
-/* Botón "Volver al inicio" */
+/* ======== BOTÓN VOLVER ======== */
 #btn-volver {
   display: block;
-  margin-top: 20px auto 10px auto;
+  margin: 20px auto 10px auto;
   background-color: #06B897;
   border: none;
   border-radius: 20px;
@@ -224,7 +228,7 @@ body {
   border-radius: 8px;
 }
 
-/* Bloque superior de recompensas */
+/* Recompensas */
 .rewards-block {
   background-color: #13F2C8;
   border-radius: 20px;
@@ -251,7 +255,7 @@ body {
   margin-bottom: 10px;
 }
 
-/* Botón pequeño */
+/* ======== BOTÓN PEQUEÑO ======== */
 .small-button {
   background-color: #06B897;
   border: none;
@@ -267,7 +271,7 @@ body {
   background-color: #05a080;
 }
 
-/* Bloque inferior */
+/* ======== BLOQUE INFERIOR ======== */
 .actions-block {
   background-color: #13F2C8;
   border-radius: 20px;
@@ -279,7 +283,7 @@ body {
   align-items: center;
 }
 
-/* Reutilizo el mismo estilo de los botones de la izquierda */
+/* ======== BOTONES GENERALES ======== */
 .menu-button {
   background-color: #06B897;
   border: none;
@@ -294,105 +298,81 @@ body {
 }
 
 .menu-button:hover {
-  background-color: #05a080; /* ya existente */
-  transform: scale(1.05);     /* agregar esta línea */
-  transition: background-color 0.3s, transform 0.2s; /* transición suave */
+  background-color: #05a080;
+  transform: scale(1.05);
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-/* ======== RECTÁNGULOS DE CURSOS ======== */
+/* ======== TARJETAS DE CURSO ======== */
 .curso-rectangulo {
   background-color: #06B897;
-  border-radius: 10px;
-  padding: 15px;
+  border-radius: 15px;
+  padding: 20px;
   color: white;
-  text-align: center;
-  width: 180px;                 
-  height: 140px;                
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.2s, background-color 0.3s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  min-height: 160px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .curso-rectangulo h3 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+  font-size: 20px;
+  margin: 0;
 }
 
 .curso-rectangulo p {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .curso-rectangulo:hover {
-  transform: scale(1.05);
+  transform: translateY(-5px);
   background-color: #05a080;
 }
-/* ======== MODAL Y OVERLAY ======== */
-#overlay {
+
+/* ============================================================
+   ========= MODAL INFORMACIÓN PARA OFERTA (TEXTO OSCURO) =====
+   ============================================================ */
+
+#modal-curso {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
+  background: rgba(0,0,0,0.6);
   justify-content: center;
   align-items: center;
-  z-index: 999;
-  transition: opacity 0.3s ease;
+  z-index: 9999;
 }
 
-#modal-alumnos {
-  background-color: white;
-  padding: 25px 30px;
-  border-radius: 15px;
-  width: 400px;
-  max-height: 80%;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease-in-out;
+#modal-curso .modal-content {
+  background: white;
+  width: 420px;
+  padding: 25px;
+  border-radius: 12px;
+  color: #222 !important;     /* TEXTO OSCURO */
 }
 
-#modal-alumnos h3 {
-  margin-top: 0;
-  text-align: center;
-  color: #007bff;
+#modal-curso h2,
+#modal-curso p,
+#modal-curso span {
+  color: #222 !important;
 }
 
-#modal-alumnos ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 15px;
-}
-
-#modal-alumnos li {
-  background: #f1f3f5;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  font-size: 15px;
-  border-left: 4px solid #007bff;
-}
-
-/* Animación modal */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.close-modal {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
 }
 
 /* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {
-  #cursos-inscritos-container,
-  #cursos-disponibles-container {
+  #cursos-inscritos-container {
     width: 95%;
     padding: 15px;
   }
@@ -401,25 +381,22 @@ body {
     width: 100%;
   }
 
-  #modal-alumnos {
+  #modal-curso .modal-content {
     width: 90%;
-    max-height: 85%;
+  }
+
+  .cursos-scroll {
+    grid-template-columns: 1fr;
   }
 }
+
+/* ======== LISTA DE ALUMNOS ======== */
 .lista-alumnos li {
-  color: #0a0a5c;           /* azul oscuro */
+  color: #0a0a5c;
   font-weight: 500;
   margin-bottom: 5px;
 }
 
 .lista-alumnos li span {
-  color: #444;              /* gris para correo */
-}
-
-.rewards-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  gap: 10px; /* separación uniforme entre elementos */
+  color: #444;
 }

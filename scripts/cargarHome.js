@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     insignias: "Insignias",
     pagos: "Pagos",
     oferta: "Oferta",
-    seminarios: "Seminarios",
+    seminarios: "Seminarios",       
     foros: "Foros",
     canjear: "CanjearRecompensas",
     gestionpuntos: "GestionPuntos",
@@ -29,25 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     boton.addEventListener("click", async () => {
       try {
-
-        // ⚠️ CAMBIO IMPORTANTE PARA FORZAR A CARGAR LA VERSIÓN MÁS RECIENTE
-        const modulo = await import(`./${nombreModulo}.js?v=${Date.now()}`);
-        //                                             ↑↑↑↑↑↑↑
-        //                  ESTO evita que el navegador use versiones antiguas
-        //                  Tu archivo CanjearRecompensas.js ahora SÍ cargará
+        const modulo = await import(`./${nombreModulo}.js`);
 
         if (typeof modulo.iniciar === "function") {
           // Para Cursos.js
           modulo.iniciar({ idRolUsuario, nombreUsuario });
-
         } else if (typeof modulo.mostrarContenido === "function") {
-          // Para los otros módulos
+          // Para los otros 9 módulos
           modulo.mostrarContenido({ idRolUsuario, nombreUsuario });
-
         } else {
           console.warn(`El módulo ${nombreModulo}.js no tiene funciones válidas exportadas.`);
         }
-
       } catch (error) {
         console.error(`Error al cargar el módulo ${nombreModulo}.js:`, error);
       }
