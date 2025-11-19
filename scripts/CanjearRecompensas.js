@@ -1,3 +1,4 @@
+
 // scripts/CanjearRecompensas.js
 console.log("ESTE ES EL CÓDIGO NUEVO DE CANJEAR RECOMPENSAS");
 export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
