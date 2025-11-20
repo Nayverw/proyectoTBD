@@ -25,7 +25,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         Tus seminarios inscritos
       </h2>
 
-      <!-- CONTENEDOR SUPERIOR IGUAL A contenedor1 -->
+      <!-- CONTENEDOR SUPERIOR -->
       <div id="contenedorSuperior" style="
         width: 100%;
         height: 50%;
@@ -46,7 +46,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         Seminarios de tus cursos
       </h2>
 
-      <!-- CONTENEDOR INFERIOR IGUAL A contenedor1 -->
+      <!-- CONTENEDOR INFERIOR -->
       <div id="contenedorInferiorSeminarios" style="
         width: 100%;
         height: 50%;
@@ -59,7 +59,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         overflow-x: auto;
         white-space: nowrap;
       ">
-        <p style="color:white;">No hay seminarios disponibles.</p>
+        <p style="color:white;">Cargando seminarios disponibles...</p>
       </div>
 
       <button id="btnExplorarSeminarios" style="
@@ -82,13 +82,10 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
     </div>
   `;
 
-  console.log("Fetch SeminariosInscritos iniciado...");
-
+  // --- CARGA DEL CONTENEDOR SUPERIOR ---
   fetch(`../processes/SeminariosInscritos.php?id_rol_usuario=${idRolUsuario}`)
     .then(res => res.json())
     .then(seminarios => {
-      console.log("Seminarios recibidos:", seminarios);
-
       const contSup = document.getElementById("contenedorSuperior");
       contSup.innerHTML = "";
 
@@ -123,11 +120,55 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
         contSup.appendChild(item);
       });
-
     })
     .catch(err => {
       console.error("Error cargando seminarios:", err);
       document.getElementById("contenedorSuperior").innerHTML =
+        `<p style="color:red;">Error cargando seminarios.</p>`;
+    });
+
+  // --- CARGA DEL CONTENEDOR INFERIOR (NUEVO) ---
+  fetch(`../processes/SeminariosNoInscritos.php?id_rol_usuario=${idRolUsuario}`)
+    .then(res => res.json())
+    .then(lista => {
+      const contInf = document.getElementById("contenedorInferiorSeminarios");
+      contInf.innerHTML = "";
+
+      if (!lista.length) {
+        contInf.innerHTML = `<p style="color:white;">No hay seminarios disponibles.</p>`;
+        return;
+      }
+
+      lista.forEach(s => {
+        const item = document.createElement("div");
+        item.dataset.idSeminario = s.id_seminario;
+
+        item.style = `
+          min-width: 120px;
+          height: 120px;
+          background: #B3FFFC;
+          border-radius: 10px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          text-align: center;
+          flex-shrink: 0;
+        `;
+
+        item.innerHTML = `
+          <strong style="font-size:14px; color:black;">${s.nombre}</strong>
+          <img src="../img/seminario.jpg" alt="${s.nombre}"
+            style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
+        `;
+
+        contInf.appendChild(item);
+      });
+    })
+    .catch(err => {
+      console.error("Error lista seminarios:", err);
+      document.getElementById("contenedorInferiorSeminarios").innerHTML =
         `<p style="color:red;">Error cargando seminarios.</p>`;
     });
 }
