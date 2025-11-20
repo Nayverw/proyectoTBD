@@ -401,3 +401,10 @@ body {
 .lista-alumnos li span {
   color: #444;
 }
+
+#ranking-table, #ranking-table th, #ranking-table td {
+    color: #004444; /* texto oscuro */
+}
+#ranking-table th {
+    color: white; /* encabezado */
+}
