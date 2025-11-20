@@ -62,23 +62,6 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         <p style="color:white;">Cargando seminarios disponibles...</p>
       </div>
 
-      <button id="btnExplorarSeminarios" style="
-        background-color: #06B897;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 10px 0;
-        font-size: 15px;
-        cursor: pointer;
-        transition: .2s;
-        width: 100%;
-        margin-top: 15px;
-      "
-      onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
-      onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'">
-        Explorar seminarios
-      </button>
-
     </div>
   `;
 
@@ -171,4 +154,19 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       document.getElementById("contenedorInferiorSeminarios").innerHTML =
         `<p style="color:red;">Error cargando seminarios.</p>`;
     });
+
+  document.addEventListener("click", function (e) {
+    const item = e.target.closest("#contenedorSuperior div, #contenedorInferiorSeminarios div");
+
+    if (item && item.dataset.idSeminario) {
+      const idSeminario = item.dataset.idSeminario;
+
+      // Importar y abrir SeminariosInformacion.js
+      import("./SeminariosInformacion.js")
+        .then(module => {
+          module.mostrarInformacionSeminario(idRolUsuario, idSeminario);
+        })
+        .catch(console.error);
+    }
+  });
 }
