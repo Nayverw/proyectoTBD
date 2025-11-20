@@ -42,23 +42,25 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
   // ================================
 
   function cargarCursos() {
-    fetch(`../processes/cargarHome.php?id_rol_usuario=${idRolUsuario}`)
-      .then(r => r.json())
-      .then(data => {
+  fetch(`../processes/cargarCursosDisponibles.php?id_rol_usuario=${idRolUsuario}`)
+    .then(r => r.json())
+    .then(data => {
+      const divIns = document.getElementById("cursos-inscritos");
+      const divDisp = document.getElementById("cursos-disponibles");
+      divIns.innerHTML = "";
+      divDisp.innerHTML = "";
 
-        const divIns = document.getElementById("cursos-inscritos");
-        const divDisp = document.getElementById("cursos-disponibles");
+      if (!data.success) {
+        divIns.innerHTML = "<p>Error al cargar cursos.</p>";
+        divDisp.innerHTML = "<p>Error al cargar cursos.</p>";
+        return;
+      }
 
-        divIns.innerHTML = "";
-        divDisp.innerHTML = "";
+      mostrarCursos(divIns, data.cursos_inscritos, "inscrito");
+      mostrarCursos(divDisp, data.cursos_disponibles, "disponible");
 
-        if (!data.success) {
-          divIns.innerHTML = "<p>Error al cargar cursos.</p>";
-          divDisp.innerHTML = "<p>Error al cargar cursos.</p>";
-          return;
-        }
 
-        const rol = data.rol;
+      const rol = data.rol;
 
         if (rol === "ESTUDIANTE") {
           mostrarCursos(divIns, data.cursos_inscritos, "inscrito");
@@ -68,7 +70,6 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
           document.querySelectorAll(".bloque-cursos")[1].style.display = "none";
           mostrarCursosDocente(divIns, data.cursos);
         }
-
       })
       .catch(err => console.error(err));
   }
@@ -86,27 +87,28 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
   }
 
   function crearCursoCard(curso, tipo) {
-    const card = document.createElement("div");
-    card.className = "curso-rectangulo";
-    card.innerHTML = `
-      <h3>${curso.nombre_curso}</h3>
-      ${curso.descripcion ? `<p>${curso.descripcion}</p>` : ""}
-    `;
+  const card = document.createElement("div");
+  card.className = "curso-rectangulo";
+  card.innerHTML = `
+    <h3>${curso.nombre_curso}</h3>
+    ${curso.curso_extra ? `<p>${curso.curso_extra}</p>` : ""}
+  `;
 
-    const btn = document.createElement("button");
-    btn.className = "small-button";
+  const btn = document.createElement("button");
+  btn.className = "small-button";
 
-    if (tipo === "disponible") {
-      btn.textContent = "Inscribirse";
-      btn.onclick = () => inscribirseCurso(curso.id_curso);
-    } else {
-      btn.textContent = "Retirarse";
-      btn.onclick = () => retirarseCurso(curso.id_curso);
-    }
-
-    card.appendChild(btn);
-    return card;
+  if (tipo === "disponible") {
+    btn.textContent = "Inscribirse";
+    btn.onclick = () => inscribirseCurso(curso.id_tipo_curso); // <-- usar id_tipo_curso
+  } else {
+    btn.textContent = "Retirarse";
+    btn.onclick = () => retirarseCurso(curso.id_tipo_curso); // <-- usar id_tipo_curso
   }
+
+  card.appendChild(btn);
+  return card;
+}
+
 
   function mostrarCursosDocente(div, lista) {
     if (!lista || lista.length === 0) {
@@ -137,17 +139,18 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
   // ======================================
 
   function inscribirseCurso(idCurso) {
-    const fd = new FormData();
-    fd.append("id_curso", idCurso);
-    fd.append("id_rol_usuario", idRolUsuario);
+  const fd = new FormData();
+  fd.append("id_curso", idCurso);
+  fd.append("id_rol_usuario", idRolUsuario);
 
-    fetch("../processes/inscribirseCurso.php", { method: "POST", body: fd })
-      .then(r => r.json())
-      .then(d => {
-        alert(d.success ? "Inscripción exitosa" : d.error);
-        if (d.success) cargarCursos();
-      });
-  }
+  fetch("../processes/inscribirseCurso.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(d => {
+      alert(d.mensaje || "Ocurrió un error"); // <-- cambiar d.error por d.mensaje
+      if (d.success) cargarCursos();
+    });
+}
+
 
   function retirarseCurso() {
     alert("Te retiraste del curso (visual).");

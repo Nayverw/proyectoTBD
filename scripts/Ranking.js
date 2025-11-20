@@ -1,5 +1,19 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\Ranking.js
 
+// Función para obtener el rol real de un usuario desde la base de datos
+async function obtenerRolReal(idRolUsuario) {
+  try {
+    const res = await fetch(`../processes/obtenerRolReal.php?id_rol_usuario=${idRolUsuario}`);
+    const data = await res.json();
+    if (data.success) return data.id_rol;
+    console.warn("No se pudo obtener el rol real, usando idRolUsuario del sessionStorage");
+    return idRolUsuario; // fallback
+  } catch (e) {
+    console.error("Error al obtener rol real:", e);
+    return idRolUsuario; // fallback
+  }
+}
+
 export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   const contenedor = document.getElementById("contenido-central");
 
@@ -32,8 +46,11 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   const rankingBody = document.getElementById("ranking-body");
 
   try {
-    // Traer datos del backend
-    const respuesta = await fetch(`../processes/getRanking.php?rol=${idRolUsuario}`);
+    // Obtener el rol real del usuario
+    const idRolReal = await obtenerRolReal(idRolUsuario);
+
+    // Traer datos del backend según rol real
+    const respuesta = await fetch(`../processes/getRanking.php?rol=${idRolReal}`);
     if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status} - ${respuesta.statusText}`);
 
     let datos = await respuesta.json();
@@ -49,7 +66,6 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
     console.log("Datos recibidos del ranking:", datos);
 
-    // Si hay usuarios
     if (datos.length > 0) {
       // Ordenar por total_puntos_acumulados DESC
       datos.sort((a, b) => (b.total_puntos_acumulados || 0) - (a.total_puntos_acumulados || 0));
@@ -65,7 +81,6 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         `;
         rankingBody.appendChild(fila);
       });
-
     } else {
       // Si no hay usuarios
       const fila = document.createElement("tr");
