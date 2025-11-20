@@ -1,16 +1,22 @@
-
 // scripts/CanjearRecompensas.js
-console.log("ESTE ES EL CÓDIGO NUEVO DE CANJEAR RECOMPENSAS");
+console.log("CARGANDO MÓDULO DE CANJEAR RECOMPENSAS");
+
 export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
+
+    console.log("📌 MOSTRAR CONTENIDO DE RECOMPENSAS");
+
     const contenedor = document.getElementById("contenido-central");
 
-    // Obtener id_rol_usuario guardado en sessionStorage
+    // Reiniciar scroll SIEMPRE
+    contenedor.scrollTop = 0;
+
+    // Obtener el id_rol_usuario REAL desde sessionStorage
     const idRolUsuarioSession = sessionStorage.getItem("id_rol_usuario");
 
     // =============================
-    // 1) OBTENER EL ROL REAL (1 o 2)
+    // 1) OBTENER ROL REAL
     // =============================
-    let idRolReal = 1; // por defecto: estudiante
+    let idRolReal = 1;
 
     async function obtenerRolReal() {
         try {
@@ -19,33 +25,37 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
             );
             const data = await res.json();
 
-            if (data.success) {
-                idRolReal = parseInt(data.id_rol);
-            }
+            if (data.success) idRolReal = parseInt(data.id_rol);
         } catch (err) {
-            console.error("Error obteniendo rol real:", err);
+            console.error("❌ Error obteniendo rol REAL:", err);
         }
     }
 
     await obtenerRolReal();
 
     // =============================
-    // 2) PINTAR LA ESTRUCTURA BASE
+    // 2) ESTRUCTURA BASE
     // =============================
     contenedor.innerHTML = `
-        <div style="width:100%; padding:20px;">
-            <h2 style="color:#0a0a5c; margin-bottom:20px;">Canjear Recompensas</h2>
+        <div id="contenedor-recompensas-wrapper"
+             style="padding: 20px; width: 100%; height: 100%; overflow-y: auto;">
 
-            <div id="rewards-list" 
-                 style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">
+            <h2 style="color:#0a0a5c; margin: 0 0 20px 0; text-align:center;">
+                Canjear Recompensas
+            </h2>
+
+            <div id="rewards-list"
+                 style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
             </div>
 
-            <!-- ZONA DONDE IRÁ EL BOTÓN DE DOCENTE -->
-            <div id="zona-docente" style="margin-top:30px;"></div>
+            <div id="zona-docente" style="margin-top:25px; text-align:center;"></div>
 
-            <div id="rewards-msg" style="margin-top:16px; color:#333;"></div>
+            <div id="rewards-msg" style="margin-top:16px; color:#333;text-align:center;"></div>
         </div>
     `;
+
+    // 🔥 MUY IMPORTANTE: resetear scroll después de construir contenido
+    document.getElementById("contenedor-recompensas-wrapper").scrollTop = 0;
 
     cargarRecompensas(idRolUsuario);
 
@@ -75,11 +85,11 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
             const recompensas = data.recompensas ?? [];
 
             // =============================
-            // MOSTRAR RECOMPENSAS
+            // PINTAR RECOMPENSAS
             // =============================
             recompensas.forEach(r => {
                 const card = document.createElement("div");
-                card.style.background = "#fff";
+                card.style.background = "white";
                 card.style.padding = "14px";
                 card.style.borderRadius = "10px";
                 card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.08)";
@@ -116,7 +126,7 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
             });
 
             // =============================
-            // 4) Mostrar botón SOLO a DOCENTE (id_rol = 2)
+            // 4) SI ES DOCENTE
             // =============================
             if (idRolReal === 2) {
                 zonaDocente.innerHTML = `
@@ -126,24 +136,24 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
                         ➕ Agregar nueva recompensa
                     </button>
 
-                    <div id="form-agregar" 
-                         style="display:none; margin-top:20px; background:white; padding:20px; 
+                    <div id="form-agregar"
+                         style="display:none; margin-top:20px; background:white; padding:20px;
                                 border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
                         <h3 style="margin-top:0;">Registrar nueva recompensa</h3>
 
                         <label>Nombre:</label>
-                        <input id="nuevo-nombre" type="text" 
+                        <input id="nuevo-nombre" type="text"
                                style="width:100%; padding:8px; margin-bottom:10px;">
 
                         <label>Precio en puntos:</label>
-                        <input id="nuevo-precio" type="number" 
+                        <input id="nuevo-precio" type="number"
                                style="width:100%; padding:8px; margin-bottom:10px;">
 
                         <label>Descuento (opcional):</label>
-                        <input id="nuevo-descuento" type="text" 
+                        <input id="nuevo-descuento" type="text"
                                style="width:100%; padding:8px; margin-bottom:10px;">
 
-                        <button id="guardar-recompensa" 
+                        <button id="guardar-recompensa"
                                 style="background:#0a0a5c; color:white; padding:10px 16px;
                                        border:none; border-radius:8px; margin-top:10px; cursor:pointer;">
                           Guardar Recompensa
@@ -151,13 +161,11 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
                     </div>
                 `;
 
-                // Mostrar/ocultar el formulario
                 document.getElementById("btn-agregar-recompensa").onclick = () => {
                     const form = document.getElementById("form-agregar");
                     form.style.display = form.style.display === "none" ? "block" : "none";
                 };
 
-                // Guardar nueva recompensa
                 document.getElementById("guardar-recompensa").onclick = guardarNuevaRecompensa;
             }
 
@@ -196,14 +204,14 @@ export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
         if (data.success) {
             alert("Recompensa agregada correctamente");
-            mostrarContenido({ idRolUsuario, nombreUsuario }); 
+            mostrarContenido({ idRolUsuario, nombreUsuario });
         } else {
             alert("Error: " + data.error);
         }
     }
 
     // =============================
-    // 6) CANJEAR RECOMPENSA
+    // 6) CANJE
     // =============================
     function confirmarCanje(idRecompensa) {
         if (!confirm("¿Deseas canjear esta recompensa?")) return;
