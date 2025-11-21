@@ -1,240 +1,346 @@
-// scripts/CanjearRecompensas.js
-console.log("CARGANDO MÓDULO DE CANJEAR RECOMPENSAS");
+console.log("CanjearRecompensas.js cargado correctamente.");
 
-export async function mostrarContenido({ idRolUsuario, nombreUsuario }) {
+export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
+  console.log("mostrarContenido ejecutado con:", { idRolUsuario, nombreUsuario });
+  const contenedor = document.getElementById("contenido-central");
 
-    console.log("📌 MOSTRAR CONTENIDO DE RECOMPENSAS");
+  contenedor.innerHTML = `
+    <div id="contenedor2" style="
+      width: 92%;
+      min-height: 480px;
+      background: white;
+      margin: 25px auto;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #ddd;
+      box-shadow: 0px 0px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: #247580;
+    ">
+      <div id="contenedor1" style="
+        width: 100%;
+        height: 50%;
+        background: #13F2C8;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+      ">
+        <p style="color:#555;">Cargando recompensas...</p>
+      </div>
 
-    const contenedor = document.getElementById("contenido-central");
+      <div id="contenedorInferior" style="
+        width: 100%;
+        height: calc(50% - 5px);
+        padding: 18px;
+        box-sizing: border-box;
+        border-radius: 10px;
+        background-color: #13F2C8;
+        overflow-y: auto;
+      ">
+        <h3 style="color:white; margin:0;">No seleccionó ninguna Recompensa</h3>
+      </div>
+    </div>
+  `;
+  console.log("Fetch recompensas iniciado...");
+  fetch(`../processes/CanjearRecompensas.php?id_rol_usuario=${idRolUsuario}`)
+    .then(res => res.json())
+    .then(recompensas => {
+      console.log("Recompensas recibidas:", recompensas);
+      const cont1 = document.getElementById("contenedor1");
+      cont1.innerHTML = "";
 
-    // Reiniciar scroll SIEMPRE
-    contenedor.scrollTop = 0;
+      if (!recompensas.length) {
+        console.log("No hay recompensas disponibles.");
+        cont1.innerHTML = `<p style="color:#444;">No hay recompensas disponibles.</p>`;
+        return;
+      }
 
-    // Obtener el id_rol_usuario REAL desde sessionStorage
-    const idRolUsuarioSession = sessionStorage.getItem("id_rol_usuario");
+      // Crear tarjetas superiores
+      recompensas.forEach(r => {
+        console.log("Procesando recompensa:", r);
+        const item = document.createElement("div");
+        item.dataset.idRecompensa = r.id_recompensa;
 
-    // =============================
-    // 1) OBTENER ROL REAL
-    // =============================
-    let idRolReal = 1;
+        item.style = `
+          min-width: 120px;
+          height: 120px;
+          background: #B3FFFC;
+          border-radius: 10px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          text-align: center;
+          flex-shrink: 0;
+          cursor: pointer;
+        `;
 
-    async function obtenerRolReal() {
-        try {
-            const res = await fetch(
-                "../processes/obtenerRolReal.php?id_rol_usuario=" + idRolUsuarioSession
-            );
-            const data = await res.json();
-
-            if (data.success) idRolReal = parseInt(data.id_rol);
-        } catch (err) {
-            console.error("❌ Error obteniendo rol REAL:", err);
+        let imagenSrc = "";
+        switch (parseInt(r.id_tipo_recompensa)) {
+          case 1: imagenSrc = "../img/descuento.jpg"; break;
+          case 2: imagenSrc = "../img/certificado.jpg"; break;
+          case 3: imagenSrc = "../img/seminario.jpg"; break;
+          case 4: imagenSrc = "../img/regalo.jpg"; break;
+          default: imagenSrc = "../img/regalo.jpg";
         }
-    }
 
-    await obtenerRolReal();
+        item.innerHTML = `
+          <strong style="font-size:14px; color:black;">${r.nombre}</strong>
+          <img src="${imagenSrc}" alt="${r.nombre}" 
+            style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
+        `;
 
-    // =============================
-    // 2) ESTRUCTURA BASE
-    // =============================
-    contenedor.innerHTML = `
-        <div id="contenedor-recompensas-wrapper"
-             style="padding: 20px; width: 100%; height: 100%; overflow-y: auto;">
+        cont1.appendChild(item);
+      });
 
-            <h2 style="color:#0a0a5c; margin: 0 0 20px 0; text-align:center;">
-                Canjear Recompensas
-            </h2>
+      // Selección de recompensa superior
+      cont1.addEventListener("click", async (e) => {
+        const item = e.target.closest("div[data-id-recompensa]");
+        if (!item) return;
 
-            <div id="rewards-list"
-                 style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
-            </div>
-
-            <div id="zona-docente" style="margin-top:25px; text-align:center;"></div>
-
-            <div id="rewards-msg" style="margin-top:16px; color:#333;text-align:center;"></div>
-        </div>
-    `;
-
-    // 🔥 MUY IMPORTANTE: resetear scroll después de construir contenido
-    document.getElementById("contenedor-recompensas-wrapper").scrollTop = 0;
-
-    cargarRecompensas(idRolUsuario);
-
-    // =============================
-    // 3) CARGAR RECOMPENSAS
-    // =============================
-    async function cargarRecompensas(idRolUsr) {
-        const url = `../processes/cargarRecompensas.php?idRolUsuario=${encodeURIComponent(idRolUsr)}`;
+        const idRecompensa = item.dataset.idRecompensa;
+        console.log("Recompensa seleccionada:", idRecompensa);
+        const contInferior = document.getElementById("contenedorInferior");
+        contInferior.innerHTML = "";
 
         try {
-            const res = await fetch(url);
-            const data = await res.json();
+          console.log("Fetch obtenerRecompensa.php iniciado...");
+          const res = await fetch(`../processes/obtenerRecompensa.php?id_recompensa=${idRecompensa}`);
+          const r = await res.json();
+          console.log("Detalle recompensa recibido:", r);
+          if (!r.id_recompensa) {
+            contInferior.innerHTML = `<p style="color:red;">Recompensa no encontrada.</p>`;
+            return;
+          }
 
-            const list = document.getElementById("rewards-list");
-            const zonaDocente = document.getElementById("zona-docente");
-            const msg = document.getElementById("rewards-msg");
+          let imagenSrc = "";
+          switch (parseInt(r.id_tipo_recompensa)) {
+            case 1: imagenSrc = "../img/descuento.jpg"; break;
+            case 2: imagenSrc = "../img/certificado.jpg"; break;
+            case 3: imagenSrc = "../img/seminario.jpg"; break;
+            case 4: imagenSrc = "../img/regalo.jpg"; break;
+            default: imagenSrc = "../img/regalo.jpg";
+          }
 
-            list.innerHTML = "";
-            msg.textContent = "";
+          contInferior.innerHTML = `
+            <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+              
+              <div style="flex-shrink:0; text-align:center;">
+                <p style="font-weight:bold; font-size:16px; color:white;">Recompensa</p>
+                <img src="${imagenSrc}" alt="${r.nombre}" 
+                  style="width:90px; height:90px; object-fit:cover; border-radius:5px;">
+              </div>
 
-            if (!data.success) {
-                msg.textContent = data.error || "Error al cargar recompensas.";
-                return;
-            }
+              <div style="flex-grow:1; color:white;">
+                <p><strong>Nombre:</strong> ${r.nombre}</p>
+                <p><strong>Precio:</strong> ${r.precio_puntos}</p>
+                <p><strong>Descuento:</strong> ${r.descuento}%</p>
 
-            const puntosActuales = parseInt(data.puntos_actuales ?? 0, 10);
-            const recompensas = data.recompensas ?? [];
+                <button id="btnCanjear" style="
+                  background-color: #06B897;
+                  color: white;
+                  border: none;
+                  border-radius: 20px;
+                  padding: 10px 0;
+                  font-size: 15px;
+                  cursor: pointer;
+                  transition: .2s;
+                  width: 100%;
+                " 
+                onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
+                onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'">
+                  Canjear
+                </button>
+              </div>
 
-            // =============================
-            // PINTAR RECOMPENSAS
-            // =============================
-            recompensas.forEach(r => {
-                const card = document.createElement("div");
-                card.style.background = "white";
-                card.style.padding = "14px";
-                card.style.borderRadius = "10px";
-                card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.08)";
-                card.style.display = "flex";
-                card.style.flexDirection = "column";
+            </div>
+          `;
 
-                card.innerHTML = `
-                    <h3 style="color:#0a0a5c; margin:0 0 10px 0;">${r.nombre}</h3>
-                    <p style="margin:0;">Precio: <strong>${r.precio_puntos} pts</strong></p>
-                    ${r.descuento ? `<p style="color:#d9534f; margin:5px 0;">Descuento: ${r.descuento}</p>` : ""}
+          // BOTÓN CANJEAR
+          document.getElementById("btnCanjear").addEventListener("click", () => {
+            console.log("Botón Canjear presionado");
+            const modal = document.createElement("div");
+            modal.id = "modalConfirmacion";
+            modal.style = `
+              position: fixed;
+              top: 0; left: 0;
+              width: 100%; height: 100%;
+              background-color: rgba(0,0,0,0.5);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 9999;
+            `;
+
+            modal.innerHTML = `
+              <div style="
+                background-color: #13F2C8;
+                padding: 20px;
+                border-radius: 12px;
+                width: 350px;
+                color: white;
+                text-align: center;
+                position: relative;
+              ">
+                <span id="cerrarModal" style="
+                  position: absolute;
+                  top: 10px;
+                  right: 12px;
+                  cursor: pointer;
+                  font-size: 18px;
+                  font-weight:bold;
+                ">X</span>
+
+                <p style="font-size:16px; margin-bottom:20px;">
+                  ¿Estás seguro que deseas canjear <strong>${r.nombre}</strong> por 
+                  <strong>${r.precio_puntos}</strong> puntos?
+                </p>
+
+                <div style="display:flex; gap:15px; justify-content:center;">
+
+                  <button id="modalSi" style="
+                    background-color: green;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight:bold;
+                    cursor:pointer;
+                  ">Si</button>
+
+                  <button id="modalNo" style="
+                    background-color: red;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight:bold;
+                    cursor:pointer;
+                  ">No</button>
+
+                </div>
+              </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById("cerrarModal").onclick = () => modal.remove();
+            document.getElementById("modalNo").onclick = () => modal.remove();
+
+            document.getElementById("modalSi").addEventListener("mouseover", e => e.target.style.transform = "scale(1.05)");
+            document.getElementById("modalSi").addEventListener("mouseout", e => e.target.style.transform = "scale(1)");
+            document.getElementById("modalNo").addEventListener("mouseover", e => e.target.style.transform = "scale(1.05)");
+            document.getElementById("modalNo").addEventListener("mouseout", e => e.target.style.transform = "scale(1)");
+
+            // SI CONFIRMA
+            document.getElementById("modalSi").addEventListener("click", async () => {
+              
+              const formData = new FormData();
+              formData.append("id_recompensa", r.id_recompensa);
+              formData.append("id_rol_usuario", idRolUsuario);
+              console.log("Botón Siiii precionado", r.id_recompensa, idRolUsuario);
+              const resp = await fetch("../processes/recompensaObtenida.php", {
+                method: "POST",
+                body: formData
+              });
+
+              const data = await resp.json();
+              console.log("Respuesta de recompensaOptenida.php:", data);
+              if (data.estado === "ok") {
+                modal.innerHTML = `
+                  <div style="
+                    background-color:#13F2C8;
+                    padding:20px;
+                    border-radius:12px;
+                    width:350px;
+                    color:white;
+                    text-align:center;
+                    position:relative;
+                  ">
+                    <span id="cerrarOk" style="
+                      position:absolute;
+                      top:10px;
+                      right:12px;
+                      cursor:pointer;
+                      font-weight:bold;
+                      font-size:18px;
+                    ">X</span>
+
+                    <p style="font-size:18px;">Canjeo de ${r.nombre} realizado con éxito</p>
+
+                    <button id="btnCerrarOk" style="
+                      background-color:#065f46;
+                      color:white;
+                      padding:10px 20px;
+                      border:none;
+                      border-radius:8px;
+                      cursor:pointer;
+                    ">Cerrar</button>
+                  </div>
                 `;
+                document.getElementById("cerrarOk").onclick = () => modal.remove();
+                document.getElementById("btnCerrarOk").onclick = () => modal.remove();
+              }
 
-                const btn = document.createElement("button");
-                btn.textContent = "Canjear";
-                btn.style.marginTop = "12px";
-                btn.style.padding = "8px 12px";
-                btn.style.border = "none";
-                btn.style.borderRadius = "8px";
-                btn.style.cursor = "pointer";
-                btn.style.fontWeight = "600";
+              else if (data.estado === "insuficientes") {
+                modal.innerHTML = `
+                  <div style="
+                    background-color:#13F2C8;
+                    padding:20px;
+                    border-radius:12px;
+                    width:350px;
+                    color:white;
+                    text-align:center;
+                    position:relative;
+                  ">
+                    <span id="cerrarIns" style="
+                      position:absolute;
+                      top:10px;
+                      right:12px;
+                      cursor:pointer;
+                      font-weight:bold;
+                      font-size:18px;
+                    ">X</span>
 
-                if (puntosActuales < r.precio_puntos) {
-                    btn.disabled = true;
-                    btn.style.background = "#ccc";
-                    btn.style.color = "#555";
-                } else {
-                    btn.style.background = "#06B897";
-                    btn.style.color = "white";
-                    btn.onclick = () => confirmarCanje(r.id_recompensa);
-                }
+                    <p style="font-size:18px;">❌ Puntos insuficientes</p>
 
-                card.appendChild(btn);
-                list.appendChild(card);
+                    <button id="btnCerrarIns" style="
+                      background-color:red;
+                      color:white;
+                      padding:10px 20px;
+                      border:none;
+                      border-radius:8px;
+                      cursor:pointer;
+                    ">Cerrar</button>
+                  </div>
+                `;
+                document.getElementById("cerrarIns").onclick = () => modal.remove();
+                document.getElementById("btnCerrarIns").onclick = () => modal.remove();
+              }
+
             });
 
-            // =============================
-            // 4) SI ES DOCENTE
-            // =============================
-            if (idRolReal === 2) {
-                zonaDocente.innerHTML = `
-                    <button id="btn-agregar-recompensa"
-                            style="background:#06B897; color:white; padding:12px 16px;
-                                   border:none; border-radius:8px; cursor:pointer; font-weight:600;">
-                        ➕ Agregar nueva recompensa
-                    </button>
-
-                    <div id="form-agregar"
-                         style="display:none; margin-top:20px; background:white; padding:20px;
-                                border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                        <h3 style="margin-top:0;">Registrar nueva recompensa</h3>
-
-                        <label>Nombre:</label>
-                        <input id="nuevo-nombre" type="text"
-                               style="width:100%; padding:8px; margin-bottom:10px;">
-
-                        <label>Precio en puntos:</label>
-                        <input id="nuevo-precio" type="number"
-                               style="width:100%; padding:8px; margin-bottom:10px;">
-
-                        <label>Descuento (opcional):</label>
-                        <input id="nuevo-descuento" type="text"
-                               style="width:100%; padding:8px; margin-bottom:10px;">
-
-                        <button id="guardar-recompensa"
-                                style="background:#0a0a5c; color:white; padding:10px 16px;
-                                       border:none; border-radius:8px; margin-top:10px; cursor:pointer;">
-                          Guardar Recompensa
-                        </button>
-                    </div>
-                `;
-
-                document.getElementById("btn-agregar-recompensa").onclick = () => {
-                    const form = document.getElementById("form-agregar");
-                    form.style.display = form.style.display === "none" ? "block" : "none";
-                };
-
-                document.getElementById("guardar-recompensa").onclick = guardarNuevaRecompensa;
-            }
+          });
 
         } catch (err) {
-            console.error(err);
-            document.getElementById("rewards-msg").textContent = "Error de conexión.";
+          contInferior.innerHTML = `<p style="color:red;">Error cargando recompensa.</p>`;
+          console.error(err);
+          console.error("Error cargando recompensa:", err);
         }
-    }
+      });
 
-    // =============================
-    // 5) GUARDAR NUEVA RECOMPENSA
-    // =============================
-    async function guardarNuevaRecompensa() {
-        const nombre = document.getElementById("nuevo-nombre").value.trim();
-        const precio = document.getElementById("nuevo-precio").value;
-        const descuento = document.getElementById("nuevo-descuento").value.trim();
-
-        if (!nombre || !precio) {
-            alert("Nombre y precio son obligatorios.");
-            return;
-        }
-
-        const form = new FormData();
-        form.append("nombre", nombre);
-        form.append("precio_puntos", precio);
-        form.append("descuento", descuento);
-        form.append("rol", "TODOS");
-        form.append("id_tipo_recompensa", 1);
-
-        const res = await fetch("../processes/agregarRecompensa.php", {
-            method: "POST",
-            body: form
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            alert("Recompensa agregada correctamente");
-            mostrarContenido({ idRolUsuario, nombreUsuario });
-        } else {
-            alert("Error: " + data.error);
-        }
-    }
-
-    // =============================
-    // 6) CANJE
-    // =============================
-    function confirmarCanje(idRecompensa) {
-        if (!confirm("¿Deseas canjear esta recompensa?")) return;
-        realizarCanje(idRecompensa);
-    }
-
-    async function realizarCanje(idRecompensa) {
-        const form = new FormData();
-        form.append("id_recompensa", idRecompensa);
-        form.append("id_rol_usuario", idRolUsuario);
-
-        const res = await fetch("../processes/canjearRecompensa.php", {
-            method: "POST",
-            body: form
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            alert(data.mensaje);
-            mostrarContenido({ idRolUsuario, nombreUsuario });
-        } else {
-            alert("Error: " + data.error);
-        }
-    }
+    })
+    .catch(err => {
+      document.getElementById("contenedor1").innerHTML =
+        `<p style="color:red;">Error cargando recompensas.</p>`;
+      console.error(err);
+      console.error("Error cargando recompensas:", err);
+    });
 }

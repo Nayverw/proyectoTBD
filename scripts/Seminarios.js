@@ -156,17 +156,24 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
     });
 
   document.addEventListener("click", function (e) {
-    const item = e.target.closest("#contenedorSuperior div, #contenedorInferiorSeminarios div");
+    // Contenedor superior
+    const itemSup = e.target.closest("#contenedorSuperior div");
+    // Contenedor inferior
+    const itemInf = e.target.closest("#contenedorInferiorSeminarios div");
 
-    if (item && item.dataset.idSeminario) {
-      const idSeminario = item.dataset.idSeminario;
-
-      // Importar y abrir SeminariosInformacion.js
+    if (itemSup && itemSup.dataset.idSeminario) {
+      const idSeminario = itemSup.dataset.idSeminario;
       import("./SeminariosInformacion.js")
-        .then(module => {
-          module.mostrarInformacionSeminario(idRolUsuario, idSeminario);
-        })
+        .then(module => module.mostrarInformacionSeminario(idRolUsuario, idSeminario))
+        .catch(console.error);
+    }
+
+    if (itemInf && itemInf.dataset.idSeminario) {
+      const idSeminario = itemInf.dataset.idSeminario;
+      import("./SeminariosCanjear.js")
+        .then(module => module.mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario))
         .catch(console.error);
     }
   });
+
 }
