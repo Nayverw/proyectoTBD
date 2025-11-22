@@ -160,14 +160,15 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
     const itemSup = e.target.closest("#contenedorSuperior div");
     // Contenedor inferior
     const itemInf = e.target.closest("#contenedorInferiorSeminarios div");
-
+    
+    //Click en seminario inscrito
     if (itemSup && itemSup.dataset.idSeminario) {
       const idSeminario = itemSup.dataset.idSeminario;
       import("./SeminariosInformacion.js")
         .then(module => module.mostrarInformacionSeminario(idRolUsuario, idSeminario))
         .catch(console.error);
     }
-
+    //Click en seminario no inscrito
     if (itemInf && itemInf.dataset.idSeminario) {
       const idSeminario = itemInf.dataset.idSeminario;
       import("./SeminariosCanjear.js")
