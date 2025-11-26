@@ -12,7 +12,8 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f0cce, #6ee2e2); /* degradado diagonal */
+  background: linear-gradient(135deg, #1f0cce, #6ee2e2);
+
   color: #fff; /* texto blanco por defecto */
 }
 

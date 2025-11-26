@@ -1,11 +1,16 @@
-// C:\xampp\htdocs\proyectoTBD\scripts\cargarHome.js
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Recuperar los datos del usuario
   const idRolUsuario = sessionStorage.getItem("id_rol_usuario");
   const nombreUsuario = sessionStorage.getItem("nombre_usuario") || "Usuario";
 
-  // Mapeo de botones → módulos
+  // ==== BOTÓN CERRAR SESIÓN ====
+  const btnCerrar = document.getElementById("btn-cerrar");
+  if (btnCerrar) {
+    btnCerrar.addEventListener("click", () => {
+      sessionStorage.clear();
+      window.location.href = "../index.html";
+    });
+  }
+
   const botones = {
     cursos: "Cursos",
     docentes: "Docentes",
@@ -13,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     insignias: "Insignias",
     pagos: "Pagos",
     oferta: "Oferta",
-    seminarios: "Seminarios",       
+    seminarios: "Seminarios",
     foros: "Foros",
     canjear: "CanjearRecompensas",
     gestionpuntos: "GestionPuntos",
@@ -22,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     almacen: "Almacen"
   };
 
-  // Asignar eventos dinámicamente
   Object.entries(botones).forEach(([id, nombreModulo]) => {
     const boton = document.getElementById(`btn-${id}`);
     if (!boton) return;
@@ -32,13 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const modulo = await import(`./${nombreModulo}.js`);
 
         if (typeof modulo.iniciar === "function") {
-          // Para Cursos.js
           modulo.iniciar({ idRolUsuario, nombreUsuario });
         } else if (typeof modulo.mostrarContenido === "function") {
-          // Para los otros 9 módulos
           modulo.mostrarContenido({ idRolUsuario, nombreUsuario });
-        } else {
-          console.warn(`El módulo ${nombreModulo}.js no tiene funciones válidas exportadas.`);
         }
       } catch (error) {
         console.error(`Error al cargar el módulo ${nombreModulo}.js:`, error);

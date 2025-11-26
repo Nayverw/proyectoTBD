@@ -2,10 +2,11 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #247580;
-  font-family: Arial, sans-serif;
-  
+  background: linear-gradient(135deg, #1f0cce, #6ee2e2);
+  font-family: "Poppins", sans-serif;
+  color: white;
 }
+
 
 .container {
   display: grid;
@@ -38,31 +39,32 @@ body {
 }
 
 .menu-box {
-  background-color: #13F2C8;
-  border-radius: 15px;
+  background: radial-gradient(circle, #1c5a63 0%, #1e88e5 100%);
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 80%;
+  border-radius: 18%;
 }
 
 .menu-btn {
-  background-color: #06B897;
-  color: white;
+  background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
+  color: rgb(7, 7, 7);
   border: none;
   border-radius: 20px;
   padding: 10px 0;
   font-size: 15px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: transform 0.2s, background 0.3s;
   width: 100%;
 }
 
 .menu-btn:hover {
-  background-color: #04a283;
+  background: linear-gradient(135deg, #64b5f6 0%, #1e88e5 100%);
   transform: scale(1.05);
 }
+
 
 /* ======== BLOQUE CENTRAL ======== */
 .center-block {
@@ -76,7 +78,7 @@ body {
   display: flex;
   align-items: center;
   width: 70%;
-  background-color: #A1E3E3;
+  background-color: #2bc5c5;
   border-radius: 25px;
   padding: 5px 10px;
   margin-bottom: 40px;
@@ -194,7 +196,7 @@ body {
   border: none;
   border-radius: 20px;
   padding: 10px 25px;
-  color: white;
+  color: rgb(8, 8, 8);
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
@@ -224,13 +226,13 @@ body {
 .icon-square {
   width: 30px;
   height: 30px;
-  background-color: white;
+  background-color: rgb(241, 236, 236);
   border-radius: 8px;
 }
 
 /* Recompensas */
 .rewards-block {
-  background-color: #13F2C8;
+  background: radial-gradient(circle, #3eaabb 0%, #1e88e5 100%);
   border-radius: 20px;
   margin-right: 15px;
   margin-top: 25px;
@@ -258,10 +260,10 @@ body {
 
 /* ======== BOTÓN PEQUEÑO ======== */
 .small-button {
-  background-color: #06B897;
+ background: radial-gradient(circle, #1c5a63 0%, #1e88e5 100%);
   border: none;
   border-radius: 10px;
-  color: white;
+  color: rgb(8, 8, 8);
   font-size: 14px;
   padding: 8px 15px;
   margin-bottom: 5px;
@@ -274,7 +276,7 @@ body {
 
 /* ======== BLOQUE INFERIOR ======== */
 .actions-block {
-  background-color: #13F2C8;
+ background: radial-gradient(circle, #33a8b9 0%, #1e88e5 100%);
   border-radius: 20px;
   margin-top: 15px;
   padding: 15px;
@@ -286,10 +288,10 @@ body {
 
 /* ======== BOTONES GENERALES ======== */
 .menu-button {
-  background-color: #06B897;
+  background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
   border: none;
   border-radius: 20px;
-  color: white;
+  color: rgb(10, 10, 10);
   font-size: 15px;
   padding: 10px 20px;
   margin: 8px 0;
@@ -408,3 +410,32 @@ body {
 #ranking-table th {
     color: white; /* encabezado */
 }
+
+.search-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    /* 🔼 Súbelo un poquito */
+    margin-top: -15px;
+
+    /* ➡️ Empuja hacia la derecha */
+    padding-right: 40px;
+}
+
+
+.bienvenida-text {
+    margin: 0;
+
+    /* 🔼 Un poco más arriba */
+    margin-top: -5px;
+
+    /* ➡️ Más a la derecha */
+    padding-left: 20px;
+
+    font-size: 18px;
+    font-weight: bold;
+    color: #0a0a5c;
+}
+

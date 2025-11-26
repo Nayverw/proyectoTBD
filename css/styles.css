@@ -5,7 +5,7 @@
 
 body {
   margin: 0;
-  background: #e0f2f1;
+  background: linear-gradient(135deg, #1f0cce, #6ee2e2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,7 +67,7 @@ body {
 }
 
 .form-box button:hover {
-  background: #711085;
+  background: #31dfe6;
    box-shadow: 20px 20px 10px rgba(168, 120, 212, 0.3);
    transform: scale(1.05);
 }
@@ -115,8 +115,8 @@ body {
 }
 
 .info-box button {
-  background: rgb(5, 62, 66);
-  color: #a0f518;
+ background: linear-gradient(135deg, #6d99bd 0%, #42a5f5 100%);
+  color: #0a0a0a;
   padding: 10px 25px;
   border-radius: 10px;
   border: none;
@@ -126,8 +126,8 @@ body {
 }
 
 .info-box button:hover {
-  background: #4206cf;
-  box-shadow: 20px 20px 10px rgba(30, 30, 236, 0.3);
+  background: #18cdec;
+  box-shadow: 20px 20px 10px rgba(4, 250, 238, 0.3);
   transform: scale(1.05);
 }
 

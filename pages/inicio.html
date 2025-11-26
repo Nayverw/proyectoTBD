@@ -35,6 +35,8 @@
           <button class="menu-btn" id="btn-oferta">Oferta</button>
           <button class="menu-btn" id="btn-seminarios">Seminarios</button>
           <button class="menu-btn" id="btn-foros">Foros</button>
+          <button class="menu-btn" id="btn-cerrar">Cerrar Sesión</button>
+
         </div>
       </div>
     </div>
@@ -43,10 +45,17 @@
     <div class="center-block">
 
       <!-- Barra de búsqueda -->
-      <div class="search-bar">
+      <div class="search-welcome">
+    
+    <div class="search-bar">
         <input type="text" placeholder="Buscar..." />
         <button>🔍</button>
-      </div>
+    </div>
+
+    <h2 id="bienvenida-usuario" class="bienvenida-text"></h2>
+
+</div>
+
 
       <!-- BLOQUE BLANCO CENTRAL -->
       <div id="main-box" class="main-box">
@@ -87,5 +96,26 @@
 
   <!-- Script principal con lógica modular -->
   <script type="module" src="../scripts/cargarHome.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const nombre = sessionStorage.getItem("nombre_usuario") || "Usuario";
+    const rol = sessionStorage.getItem("rol_usuario") || "";
+
+    let saludo = "Bienvenido";
+
+    if (rol === "ESTUDIANTE") saludo = "Bienvenido Estudiante";
+    if (rol === "DOCENTE") saludo = "Bienvenido Docente";
+
+    const elemento = document.getElementById("bienvenida-usuario");
+    if (elemento) {
+        elemento.textContent = `${saludo}, ${nombre}`;
+    }
+});
+</script>
+
+
+
 </body>
+
 </html>
