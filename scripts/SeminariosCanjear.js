@@ -178,10 +178,10 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
           // Confirmar canje
           document.getElementById("modalSi").addEventListener("click", async () => {
             const formData = new FormData();
-            formData.append("id_recompensa", data.id_seminario);
             formData.append("id_rol_usuario", idRolUsuario);
-
-            const resp = await fetch("../processes/recompensaOptenida.php", {
+            formData.append("id_seminario", idSeminario);
+            console.log("llegamos hasta aqui si presionamos Si");
+            const resp = await fetch("../processes/SeminariosCanjear.php", {
               method: "POST",
               body: formData
             });
@@ -221,6 +221,12 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
               `;
               document.getElementById("cerrarOk").onclick = () => modal.remove();
               document.getElementById("btnCerrarOk").onclick = () => modal.remove();
+              setTimeout(() => {
+                import('./Seminarios.js')
+                  .then(module => module.mostrarContenido({ idRolUsuario }))
+                  .catch(console.error);
+              }, 1500);
+
             } else if (respData.estado === "insuficientes") {
               modal.innerHTML = `
                 <div style="
