@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const idRolUsuario = sessionStorage.getItem("id_rol_usuario");
   const nombreUsuario = sessionStorage.getItem("nombre_usuario") || "Usuario";
+  const rolUsuario = sessionStorage.getItem("rol_usuario") || "";
 
   // ==== BOTÓN CERRAR SESIÓN ====
   const btnCerrar = document.getElementById("btn-cerrar");
@@ -11,6 +12,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ==== AGREGAR BOTÓN BITÁCORA SOLO SI ES ADMIN ====
+  if (rolUsuario.toUpperCase() === "ADMINISTRADOR") {
+    const actionsBlock = document.querySelector(".actions-block");
+    if (actionsBlock) {
+      const btnBitacora = document.createElement("button");
+      btnBitacora.textContent = "Bitácora";
+      btnBitacora.classList.add("menu-button");
+      btnBitacora.id = "btn-bitacora";
+      actionsBlock.appendChild(btnBitacora);
+    }
+  }
+
+  // ==== LISTA DE MÓDULOS A CARGAR ====
   const botones = {
     cursos: "Cursos",
     docentes: "Docentes",
@@ -24,7 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
     gestionpuntos: "GestionPuntos",
     logros: "Logros",
     ranking: "Ranking",
-    almacen: "Almacen"
+    almacen: "Almacen",
+    bitacora: "Bitacora" // NUEVO
   };
 
   Object.entries(botones).forEach(([id, nombreModulo]) => {

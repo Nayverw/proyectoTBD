@@ -17,6 +17,11 @@
     body {
       overflow-x: hidden !important;
     }
+
+    /* Oculta el botón de Bitácora por defecto */
+    #btn-bitacora {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -35,8 +40,11 @@
           <button class="menu-btn" id="btn-oferta">Oferta</button>
           <button class="menu-btn" id="btn-seminarios">Seminarios</button>
           <button class="menu-btn" id="btn-foros">Foros</button>
-          <button class="menu-btn" id="btn-cerrar">Cerrar Sesión</button>
 
+          <!-- BOTÓN DE BITÁCORA (solo para ADMIN) -->
+          <button class="menu-btn" id="btn-bitacora">Bitácora</button>
+
+          <button class="menu-btn" id="btn-cerrar">Cerrar Sesión</button>
         </div>
       </div>
     </div>
@@ -47,15 +55,14 @@
       <!-- Barra de búsqueda -->
       <div class="search-welcome">
     
-    <div class="search-bar">
-        <input type="text" placeholder="Buscar..." />
-        <button>🔍</button>
-    </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Buscar..." />
+            <button>🔍</button>
+        </div>
 
-    <h2 id="bienvenida-usuario" class="bienvenida-text"></h2>
+        <h2 id="bienvenida-usuario" class="bienvenida-text"></h2>
 
-</div>
-
+      </div>
 
       <!-- BLOQUE BLANCO CENTRAL -->
       <div id="main-box" class="main-box">
@@ -99,6 +106,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
     const nombre = sessionStorage.getItem("nombre_usuario") || "Usuario";
     const rol = sessionStorage.getItem("rol_usuario") || "";
 
@@ -106,16 +114,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (rol === "ESTUDIANTE") saludo = "Bienvenido Estudiante";
     if (rol === "DOCENTE") saludo = "Bienvenido Docente";
+    if (rol === "ADMINISTRADOR") saludo = "Bienvenido Administrador";
 
     const elemento = document.getElementById("bienvenida-usuario");
     if (elemento) {
         elemento.textContent = `${saludo}, ${nombre}`;
     }
+
+    // 🔹 Mostrar botón Bitácora solo si el rol es Administrador
+    const botonBitacora = document.getElementById("btn-bitacora");
+    if (rol === "ADMINISTRADOR" && botonBitacora) {
+        botonBitacora.style.display = "block";
+    }
 });
 </script>
 
-
-
 </body>
-
 </html>

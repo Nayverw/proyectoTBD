@@ -37,7 +37,7 @@ if ($resultado && $resultado->num_rows === 1) {
     $contrasenia_guardada = $fila['contrasenia'];
     $id_rol_usuario = $fila['id_rol_usuario'];
     $nombre_completo = $fila['nombres'] . " " . $fila['apellidos'];
-    $rol_nombre = strtoupper($fila['rol']); // ESTUDIANTE / DOCENTE
+    $rol_nombre = strtoupper($fila['rol']); // ESTUDIANTE / DOCENTE / ADMINISTRADOR
 
     if ($contrasena === $contrasenia_guardada) {
 
@@ -51,7 +51,7 @@ if ($resultado && $resultado->num_rows === 1) {
             sessionStorage.setItem('id_rol_usuario', '$id_rol_usuario');
             sessionStorage.setItem('correo', '$correo');
             sessionStorage.setItem('nombre_usuario', '$nombre_completo');
-            sessionStorage.setItem('rol_usuario', '$rol_nombre'); // ESTUDIANTE o DOCENTE
+            sessionStorage.setItem('rol_usuario', '$rol_nombre'); 
             window.location.href = '../pages/inicio.html';
         </script>
         ";

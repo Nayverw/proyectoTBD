@@ -23,3 +23,17 @@ VALUES
 
 ALTER TABLE CANJE_RECOMPENSA
 MODIFY COLUMN fecha_usado DATETIME NULL;
+
+
+//para que de la parte de administracion y bitacora tienen que agregar lo siguiente
+
+USE classcloud;
+
+INSERT INTO rol (id_rol, nombre) VALUES (3, 'Administrador');
+
+ALTER TABLE bitacora ADD COLUMN fecha DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+//algo para agregar es que al registrarse en la parte donde puedes escoger si quieres registrarse
+como docente o Estudiante tambien aparecera Administrador el cual podras crear un usuario como administrador pero 
+solo se podra crear uno luego de eso ya no dejara que nadie mas se registre como administrador esto para que cada uno 
+pueda crear su administrador 

@@ -19,20 +19,28 @@ $telefono = trim($_POST['telefono'] ?? '');
 $rol_nombre = $_POST['rol'] ?? 'Estudiante';
 $codigo_invitacion = trim($_POST['codigo_invitacion'] ?? '');
 
+// Verificar si ya existe un administrador
+$sql_admin = "SELECT COUNT(*) AS total FROM login l
+              INNER JOIN rol_usuario ru ON l.id_rol_usuario = ru.id_rol_usuario
+              WHERE ru.id_rol = 3"; // 3 = Administrador
+$result_admin = $conn->query($sql_admin);
+$row_admin = $result_admin->fetch_assoc();
+$adminExistente = $row_admin['total'] > 0;
+
 if (!empty($_POST)) {
     if (!$nombres || !$apellidos || !$correo || !$contrasenia || !$fecha_nacimiento || !$telefono) {
         die("Todos los campos obligatorios deben completarse.");
     }
 
-    // ❌ ELIMINADO: validación del código de invitación para docentes
+    // ⚠️ Validación para ADMINISTRADOR
+    if ($rol_nombre === "Administrador" && $adminExistente) {
+        die("Ya existe un administrador registrado. No se puede registrar otro.");
+    }
 
-    // --- Transacción ---
     $conn->begin_transaction();
 
     try {
-        // ⚠️ Guardar contraseña sin encriptar
         $contrasenia_plana = $contrasenia;
-
         $ci = rand(10000000, 99999999);
         $estado = "Activo";
 
@@ -42,7 +50,6 @@ if (!empty($_POST)) {
         $id_usuario = $stmt->insert_id;
         $stmt->close();
 
-        // obtener id_rol
         $stmt_rol = $conn->prepare("SELECT id_rol FROM ROL WHERE nombre = ?");
         $stmt_rol->bind_param("s", $rol_nombre);
         $stmt_rol->execute();
@@ -50,7 +57,6 @@ if (!empty($_POST)) {
         $id_rol = $rol_data['id_rol'];
         $stmt_rol->close();
 
-        // insertar en ROL_USUARIO
         $stmt = $conn->prepare("INSERT INTO ROL_USUARIO (id_usuario, id_rol) VALUES (?, ?)");
         $stmt->bind_param("ii", $id_usuario, $id_rol);
         $stmt->execute();
@@ -60,13 +66,11 @@ if (!empty($_POST)) {
         $correo_institucional = htmlspecialchars(preg_replace('/@.+$/', '@classcloud.edu.bo', $correo));
         $codigo_random = generarCodigo(8);
 
-        // insertar login CON contraseña en texto plano
         $stmt = $conn->prepare("INSERT INTO LOGIN (contrasenia, codigo, correo_institucional, id_rol_usuario) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("sssi", $contrasenia_plana, $codigo_random, $correo_institucional, $id_rol_usuario);
         $stmt->execute();
         $stmt->close();
 
-        // verificar si ya existe gestión de puntos
         $stmt_check = $conn->prepare("SELECT COUNT(*) AS cnt FROM GESTION_PUNTOS WHERE id_rol_usuario = ?");
         $stmt_check->bind_param("i", $id_rol_usuario);
         $stmt_check->execute();
@@ -80,10 +84,7 @@ if (!empty($_POST)) {
             $stmt->close();
         }
 
-        // ❌ ELIMINADO: actualización de codigos_docente (ya no se usa)
-
         $conn->commit();
-
         header('Location: ../index.html');
         exit;
 
