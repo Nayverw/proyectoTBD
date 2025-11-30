@@ -5,6 +5,9 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
 
     const contenedor = document.getElementById("contenido-central");
 
+    /* ------------------------------------------------------------------
+       ESTRUCTURA PRINCIPAL: botones arriba + zona dinámica abajo
+    ------------------------------------------------------------------ */
     contenedor.innerHTML = `
         <div id="contenedorDocente" style="
             width: 92%;
@@ -19,81 +22,19 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
             flex-direction: column;
             gap: 15px;
         ">
-            <!-- BOTONES SUPERIORES -->
-            <div style="display:flex; justify-content: flex-start; gap: 15px;">
-                <button id="btnAñadirForo" style="
-                    background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
-                    color: white;
-                    border: none;
-                    border-radius: 20px;
-                    padding: 10px 20px;
-                    font-size: 14px;
-                    cursor: pointer;
-                    transition: transform 0.2s, background 0.3s;
-                ">Añadir foro</button>
 
-                <button id="btnMisForos" style="
-                    background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
-                    color: white;
-                    border: none;
-                    border-radius: 20px;
-                    padding: 10px 20px;
-                    font-size: 14px;
-                    cursor: pointer;
-                    transition: transform 0.2s, background 0.3s;
-                ">Mis foros</button>
+            <!-- ZONA FIJA (botones siempre visibles) -->
+            <div id="zonaBotones" style="display:flex; gap: 15px;">
+                <button id="btnAñadirForo" class="btn-foro">Añadir foro</button>
+                <button id="btnMisForos" class="btn-foro">Mis foros</button>
             </div>
 
-            <!-- FORMULARIO DE CREACIÓN DE FORO -->
-            <div id="formCrearForo" style="
-                background-color: #8083FF;
-                border-radius: 10px;
-                padding: 15px;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                color: white;
-            ">
-                <h3 style="text-align:center; margin-bottom: 12px;">Crea un Foro</h3>
+            <!-- ZONA DINÁMICA (cambia entre formulario y foros) -->
+            <div id="zonaDinamica"></div>
 
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <label style="width:120px;">Título:</label>
-                    <input type="text" id="inputTitulo" style="flex:1; padding:5px; border-radius:5px; border:none;">
-                </div>
-
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <label style="width:120px;">Descripción:</label>
-                    <input type="text" id="inputDescripcion" style="flex:1; padding:5px; border-radius:5px; border:none;">
-                </div>
-
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <label style="width:120px;">Valor puntos:</label>
-                    <input type="number" id="inputValorPuntos" style="flex:1; padding:5px; border-radius:5px; border:none;">
-                </div>
-
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <label style="width:120px;">Curso:</label>
-                    <select id="comboCursos" style="flex:1; padding:5px; border-radius:5px; border:none;">
-                        <option>Cargando cursos...</option>
-                    </select>
-                </div>
-
-                <div style="display:flex; justify-content:center; margin-top:8px;">
-                    <button id="btnCrearForo" style="
-                        background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
-                        color: white;
-                        border: none;
-                        border-radius: 20px;
-                        padding: 8px 25px;
-                        font-size: 15px;
-                        cursor: pointer;
-                        transition: transform 0.2s, background 0.3s;
-                    ">Crear foro</button>
-                </div>
-            </div>
         </div>
 
-        <!-- OVERLAY DE ÉXITO -->
+        <!-- Overlay éxito -->
         <div id="overlayExito" style="
             position: fixed;
             top: 20px;
@@ -122,9 +63,21 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         </div>
     `;
 
-    // Hover para los botones
-    ["btnAñadirForo", "btnMisForos", "btnCrearForo"].forEach(id => {
-        const btn = document.getElementById(id);
+
+    /* ------------------------------------------------------------------
+       ESTILO DINÁMICO DE BOTONES
+    ------------------------------------------------------------------ */
+    document.querySelectorAll(".btn-foro").forEach(btn => {
+        btn.style = `
+            background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        `;
         btn.onmouseenter = () => {
             btn.style.background = "linear-gradient(135deg, #64b5f6 0%, #1e88e5 100%)";
             btn.style.transform = "scale(1.05)";
@@ -135,76 +88,151 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         };
     });
 
-    // Cargar cursos disponibles
-    fetch("../processes/ForosCombo.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `id_rol_usuario=${idRol}`
-    })
-    .then(res => res.json())
-    .then(cursos => {
-        const combo = document.getElementById("comboCursos");
-        combo.innerHTML = "";
-        if (!cursos.length) {
-            combo.innerHTML = `<option>No hay cursos disponibles</option>`;
-            return;
-        }
-        cursos.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.id_curso;
-            option.textContent = c.nombre_curso;
-            combo.appendChild(option);
-        });
-    })
-    .catch(err => {
-        console.error("Error cargando cursos:", err);
-        const combo = document.getElementById("comboCursos");
-        combo.innerHTML = `<option>Error al cargar cursos</option>`;
-    });
 
-    // Acción del botón Crear foro
-    document.getElementById("btnCrearForo").onclick = () => {
-        const titulo = document.getElementById("inputTitulo").value.trim();
-        const descripcion = document.getElementById("inputDescripcion").value.trim();
-        const valorPuntos = document.getElementById("inputValorPuntos").value;
-        const idCurso = document.getElementById("comboCursos").value;
+    /* ------------------------------------------------------------------
+       FUNCIÓN: Cargar formulario en zona dinámica
+    ------------------------------------------------------------------ */
+    function cargarFormulario() {
+        const zona = document.getElementById("zonaDinamica");
 
-        if (!titulo || !descripcion || !valorPuntos || !idCurso) {
-            alert("Todos los campos son obligatorios.");
-            return;
-        }
+        zona.innerHTML = `
+            <div id="formCrearForo" style="
+                background-color: #8083FF;
+                border-radius: 10px;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                color: white;
+            ">
+                <h3 style="text-align:center;">Crea un Foro</h3>
 
-        fetch("../processes/ForosCrear.php", {
+                <div style="display:flex; gap:10px;">
+                    <label style="width:120px;">Título:</label>
+                    <input type="text" id="inputTitulo" style="flex:1;">
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <label style="width:120px;">Descripción:</label>
+                    <input type="text" id="inputDescripcion" style="flex:1;">
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <label style="width:120px;">Valor puntos:</label>
+                    <input type="number" id="inputValorPuntos" style="flex:1;">
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <label style="width:120px;">Curso:</label>
+                    <select id="comboCursos" style="flex:1;">
+                        <option>Cargando cursos...</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; justify-content:center;">
+                    <button id="btnCrearForo" class="btn-foro">Crear foro</button>
+                </div>
+            </div>
+        `;
+
+        cargarCursosEnCombo();
+        prepararCreacionForo();
+    }
+
+
+    /* ------------------------------------------------------------------
+       FUNCIÓN: Cargar cursos en combo
+    ------------------------------------------------------------------ */
+    function cargarCursosEnCombo() {
+        fetch("../processes/ForosCombo.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `titulo=${encodeURIComponent(titulo)}&descripcion=${encodeURIComponent(descripcion)}&valor_puntos=${valorPuntos}&id_curso=${idCurso}`
+            body: `id_rol_usuario=${idRol}`
         })
-        .then(res => res.json())
-        .then(resp => {
-            if (resp.success) {
+            .then(res => res.json())
+            .then(cursos => {
+                const combo = document.getElementById("comboCursos");
+                combo.innerHTML = "";
 
-                // --- Mostrar overlay de éxito ---
-                const overlay = document.getElementById("overlayExito");
-                overlay.style.display = "block";
+                if (!cursos.length) {
+                    combo.innerHTML = `<option>No hay cursos disponibles</option>`;
+                    return;
+                }
 
-                let timer = setTimeout(() => {
-                    overlay.style.display = "none";
-                }, 5000);
+                cursos.forEach(c => {
+                    const option = document.createElement("option");
+                    option.value = c.id_curso;
+                    option.textContent = c.nombre_curso;
+                    combo.appendChild(option);
+                });
+            });
+    }
 
-                document.getElementById("cerrarOverlay").onclick = () => {
-                    overlay.style.display = "none";
-                    clearTimeout(timer);
-                };
 
-                // Recargar vista
-                mostrarContenidoForo({ idRol, nombreUsuario });
-            } else {
-                alert("Error al crear foro: " + resp.error);
+    /* ------------------------------------------------------------------
+       FUNCIÓN: Preparar botón Crear Foro
+    ------------------------------------------------------------------ */
+    function prepararCreacionForo() {
+        document.getElementById("btnCrearForo").onclick = () => {
+            const titulo = document.getElementById("inputTitulo").value.trim();
+            const descripcion = document.getElementById("inputDescripcion").value.trim();
+            const valorPuntos = document.getElementById("inputValorPuntos").value;
+            const idCurso = document.getElementById("comboCursos").value;
+
+            if (!titulo || !descripcion || !valorPuntos || !idCurso) {
+                alert("Todos los campos son obligatorios.");
+                return;
             }
-        })
-        .catch(err => {
-            console.error("Error en ForosCrear.php:", err);
-            alert("Error al crear foro.");
+
+            fetch("../processes/ForosCrear.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `titulo=${encodeURIComponent(titulo)}&descripcion=${encodeURIComponent(descripcion)}&valor_puntos=${valorPuntos}&id_curso=${idCurso}`
+            })
+                .then(res => res.json())
+                .then(resp => {
+                    if (resp.success) {
+                        const overlay = document.getElementById("overlayExito");
+                        overlay.style.display = "block";
+
+                        let timer = setTimeout(() => {
+                            overlay.style.display = "none";
+                        }, 5000);
+
+                        document.getElementById("cerrarOverlay").onclick = () => {
+                            overlay.style.display = "none";
+                            clearTimeout(timer);
+                        };
+
+                        cargarFormulario(); // refrescar formulario
+                    } else {
+                        alert("Error al crear foro: " + resp.error);
+                    }
+                });
+        };
+    }
+
+
+    /* ------------------------------------------------------------------
+       BOTÓN: Añadir Foro → muestra formulario
+    ------------------------------------------------------------------ */
+    document.getElementById("btnAñadirForo").onclick = () => {
+        cargarFormulario();
+    };
+
+
+    /* ------------------------------------------------------------------
+       BOTÓN: Mis foros → usa ForosCargar.js PERO SIN BORRAR BOTONES
+    ------------------------------------------------------------------ */
+    document.getElementById("btnMisForos").onclick = () => {
+        import("./ForosCargar.js").then(module => {
+            module.cargarMisForos({ idRol });
         });
     };
+
+
+    /* ------------------------------------------------------------------
+       Al iniciar la vista → mostrar formulario
+    ------------------------------------------------------------------ */
+    cargarFormulario();
 }
