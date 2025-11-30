@@ -1,11 +1,13 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\ForosCargar.js
 
+import { mostrarForoSeleccionado } from "./ForosSeleccionado.js";
+
 export function cargarMisForos({ idRol }) {
     console.log("ForosCargar.js cargado correctamente");
 
     let foroSeleccionado = null;
 
-    // Usar la zona dinámica existente del docente
+    // Se usa la zona dinámica del docente
     const zona = document.getElementById("zonaDinamica");
 
     zona.innerHTML = `
@@ -36,7 +38,7 @@ export function cargarMisForos({ idRol }) {
         "></div>
     `;
 
-    // === PETICIÓN REAL DE FOROS DEL DOCENTE ===
+    // === CARGAR FOROS ===
     fetch("../processes/ForosDocente.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -52,7 +54,6 @@ export function cargarMisForos({ idRol }) {
                 return;
             }
 
-            // Crear tarjetas
             data.forEach(foro => {
                 const card = document.createElement("div");
                 card.dataset.idForo = foro.id_foro;
@@ -89,27 +90,22 @@ export function cargarMisForos({ idRol }) {
                 `<p style="color:white;">Error al cargar los foros.</p>`;
         });
 
-
-    // === LISTENER PARA SELECCIONAR TARJETAS ===
+    // === SELECCIONAR FORO ===
     const contenedorForosSuperior = document.getElementById("contenedorForosSuperior");
 
     contenedorForosSuperior.addEventListener("click", function (e) {
         const item = e.target.closest("div[data-id-foro]");
         if (!item) return;
 
-        // Guardar selección
         foroSeleccionado = item.dataset.idForo;
         console.log("Foro seleccionado:", foroSeleccionado);
 
-        // Quitar resaltado previo
         contenedorForosSuperior
             .querySelectorAll("div[data-id-foro]")
-            .forEach(d => d.style.border = "2px solid transparent");
+            .forEach(d => (d.style.border = "2px solid transparent"));
 
-        // Resaltar seleccionado
         item.style.border = "2px solid blue";
 
-        // Mostrar botón debajo
         const contenedorBoton = document.getElementById("contenedorBotonIngresar");
 
         contenedorBoton.innerHTML = `
@@ -128,7 +124,6 @@ export function cargarMisForos({ idRol }) {
             </button>
         `;
 
-        // ==== HOVER DINÁMICO ====
         const btn = document.getElementById("btnIngresarForo");
 
         btn.onmouseenter = () => {
@@ -141,9 +136,13 @@ export function cargarMisForos({ idRol }) {
             btn.style.transform = "scale(1)";
         };
 
-        // ==== SIN FUNCIONALIDAD (TEMPORAL) ====
         btn.onclick = () => {
-            console.log(`Ingresar al foro (DOCENTE):`, foroSeleccionado);
+            console.log("ENTRAR AL FORO ->", foroSeleccionado, "ROL:", idRol);
+
+            mostrarForoSeleccionado({
+                idRol,
+                idForo: foroSeleccionado
+            });
         };
     });
 }

@@ -6,7 +6,7 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
     const contenedor = document.getElementById("contenido-central");
 
     /* ------------------------------------------------------------------
-       ESTRUCTURA PRINCIPAL: botones arriba + zona dinámica abajo
+       ESTRUCTURA PRINCIPAL
     ------------------------------------------------------------------ */
     contenedor.innerHTML = `
         <div id="contenedorDocente" style="
@@ -23,13 +23,13 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
             gap: 15px;
         ">
 
-            <!-- ZONA FIJA (botones siempre visibles) -->
+            <!-- ZONA FIJA -->
             <div id="zonaBotones" style="display:flex; gap: 15px;">
                 <button id="btnAñadirForo" class="btn-foro">Añadir foro</button>
                 <button id="btnMisForos" class="btn-foro">Mis foros</button>
             </div>
 
-            <!-- ZONA DINÁMICA (cambia entre formulario y foros) -->
+            <!-- ZONA DINÁMICA -->
             <div id="zonaDinamica"></div>
 
         </div>
@@ -63,34 +63,36 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         </div>
     `;
 
-
     /* ------------------------------------------------------------------
-       ESTILO DINÁMICO DE BOTONES
+       FUNCIÓN GENERAL: aplicar estilos a todos los botones .btn-foro
     ------------------------------------------------------------------ */
-    document.querySelectorAll(".btn-foro").forEach(btn => {
-        btn.style = `
-            background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-        `;
-        btn.onmouseenter = () => {
-            btn.style.background = "linear-gradient(135deg, #64b5f6 0%, #1e88e5 100%)";
-            btn.style.transform = "scale(1.05)";
-        };
-        btn.onmouseleave = () => {
+    function aplicarEstiloBotones() {
+        document.querySelectorAll(".btn-foro").forEach(btn => {
             btn.style.background = "linear-gradient(135deg, #90caf9 0%, #42a5f5 100%)";
-            btn.style.transform = "scale(1)";
-        };
-    });
+            btn.style.color = "white";
+            btn.style.border = "none";
+            btn.style.borderRadius = "20px";
+            btn.style.padding = "10px 20px";
+            btn.style.fontSize = "14px";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "transform 0.2s, background 0.3s";
 
+            btn.onmouseenter = () => {
+                btn.style.background = "linear-gradient(135deg, #64b5f6 0%, #1e88e5 100%)";
+                btn.style.transform = "scale(1.05)";
+            };
+            btn.onmouseleave = () => {
+                btn.style.background = "linear-gradient(135deg, #90caf9 0%, #42a5f5 100%)";
+                btn.style.transform = "scale(1)";
+            };
+        });
+    }
+
+    /* APLICAR estilo inicial a los botones superiores */
+    aplicarEstiloBotones();
 
     /* ------------------------------------------------------------------
-       FUNCIÓN: Cargar formulario en zona dinámica
+       FUNCIÓN: Cargar formulario
     ------------------------------------------------------------------ */
     function cargarFormulario() {
         const zona = document.getElementById("zonaDinamica");
@@ -137,8 +139,10 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
 
         cargarCursosEnCombo();
         prepararCreacionForo();
-    }
 
+        /* APLICAR los estilos nuevamente para incluir "Crear foro" */
+        aplicarEstiloBotones();
+    }
 
     /* ------------------------------------------------------------------
        FUNCIÓN: Cargar cursos en combo
@@ -168,9 +172,8 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
             });
     }
 
-
     /* ------------------------------------------------------------------
-       FUNCIÓN: Preparar botón Crear Foro
+       FUNCIÓN: Crear foro
     ------------------------------------------------------------------ */
     function prepararCreacionForo() {
         document.getElementById("btnCrearForo").onclick = () => {
@@ -204,7 +207,7 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
                             clearTimeout(timer);
                         };
 
-                        cargarFormulario(); // refrescar formulario
+                        cargarFormulario(); // refrescar
                     } else {
                         alert("Error al crear foro: " + resp.error);
                     }
@@ -212,27 +215,17 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         };
     }
 
-
     /* ------------------------------------------------------------------
-       BOTÓN: Añadir Foro → muestra formulario
+       BOTONES SUPERIORES
     ------------------------------------------------------------------ */
-    document.getElementById("btnAñadirForo").onclick = () => {
-        cargarFormulario();
-    };
+    document.getElementById("btnAñadirForo").onclick = () => cargarFormulario();
 
-
-    /* ------------------------------------------------------------------
-       BOTÓN: Mis foros → usa ForosCargar.js PERO SIN BORRAR BOTONES
-    ------------------------------------------------------------------ */
     document.getElementById("btnMisForos").onclick = () => {
         import("./ForosCargar.js").then(module => {
             module.cargarMisForos({ idRol });
         });
     };
 
-
-    /* ------------------------------------------------------------------
-       Al iniciar la vista → mostrar formulario
-    ------------------------------------------------------------------ */
+    /* Cargar formulario inicial */
     cargarFormulario();
 }
