@@ -1,13 +1,14 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\ForosPreguntasEstudiante.js
-
-export function cargarPreguntasForo({ idRol, idForo }) {
-    console.log("ForosPreguntasEstudiante.js cargado correctamente.");
+export function cargarPreguntasForo({ idRol, idForo, tituloForo }) {
+    console.log("ForosPreguntasEstudiante.js cargado correctamente");
     console.log("ID RolUsuario:", idRol, "ID Foro:", idForo);
 
     const contenedor = document.getElementById("contenido-central");
 
     contenedor.innerHTML = `
         <div style="width: 90%; margin: 20px auto;">
+            <h2 style="text-align:center; margin-bottom:15px;">${tituloForo}</h2>
+
             <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px;">
                 <button id="btnVolver" style="
                     padding: 10px 20px;
@@ -52,7 +53,7 @@ export function cargarPreguntasForo({ idRol, idForo }) {
         </div>
     `;
 
-    // ========== BOTÓN VOLVER (ESTUDIANTE) ==========
+    // ========== BOTÓN VOLVER ==========
     document.getElementById("btnVolver").onclick = () => {
         import("./ForosEstudiantes.js").then(mod => {
             mod.mostrarContenidoForo({ idRol, nombreUsuario: "Estudiante" });
@@ -61,109 +62,101 @@ export function cargarPreguntasForo({ idRol, idForo }) {
 
     const contenedorListado = document.getElementById("contenedorListadoPreguntas");
 
-    // ─────────────────────────────────────────────
-    // ========== CARGAR PREGUNTAS ==========
-    // ─────────────────────────────────────────────
     function cargarPreguntas() {
         fetch("../processes/ForosPreguntasCargar.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `id_foro=${idForo}`
         })
-            .then(res => res.json())
-            .then(data => {
-                contenedorListado.innerHTML = "";
-                if (!data.length) {
-                    contenedorListado.innerHTML = `<p>No hay preguntas todavía.</p>`;
-                    return;
-                }
+        .then(res => res.json())
+        .then(data => {
+            contenedorListado.innerHTML = "";
+            if (!data.length) {
+                contenedorListado.innerHTML = `<p>No hay preguntas todavía.</p>`;
+                return;
+            }
 
-                data.forEach(p => {
-                    const preguntaDiv = document.createElement("div");
-                    preguntaDiv.style = "border-bottom:1px solid #ccc; padding:8px;";
-                    preguntaDiv.innerHTML = `
-                        <strong>${p.descripcion}</strong> 
-                        <small style="color:gray;">(${p.fecha})</small>
+            data.forEach(p => {
+                const preguntaDiv = document.createElement("div");
+                preguntaDiv.style = "border-bottom:1px solid #ccc; padding:8px; text-align:left;";
+                preguntaDiv.innerHTML = `
+                    <strong>${p.rol}. ${p.usuario}: ${p.descripcion}</strong>
+                    <small style="color:gray;">(${p.fecha})</small>
 
-                        <div id="respuestas_${p.id_pregunta_foro}" 
-                             style="margin-left:15px; margin-top:5px;">
-                            <p>Cargando respuestas...</p>
-                        </div>
+                    <div id="respuestas_${p.id_pregunta_foro}" style="margin-left:20px; margin-top:5px;">
+                        <p style="color:gray;">Cargando respuestas...</p>
+                    </div>
 
-                        <div style="display:flex; gap:5px; margin-top:5px;">
-                            <input type="text" 
-                                placeholder="Escribe tu respuesta..." 
-                                style="flex:1; padding:5px; border-radius:5px; border:1px solid #ccc;" 
-                                id="inputRespuesta_${p.id_pregunta_foro}">
-                            
-                            <button data-id="${p.id_pregunta_foro}" class="btnResponder" 
-                                style="padding:5px 10px; border-radius:5px; border:none; background:#42a5f5; color:white; cursor:pointer;">
-                                Responder
-                            </button>
-                        </div>
-                    `;
-                    contenedorListado.appendChild(preguntaDiv);
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <input type="text" placeholder="Escribe tu respuesta..." 
+                            style="flex:1; padding:5px; border-radius:5px; border:1px solid #ccc;" 
+                            id="inputRespuesta_${p.id_pregunta_foro}">
 
-                    cargarRespuestas(p.id_pregunta_foro);
-                });
+                        <button data-id="${p.id_pregunta_foro}" class="btnResponder"
+                            style="padding:5px 10px; border-radius:5px; border:none; background:#42a5f5; color:white; cursor:pointer;">
+                            Responder
+                        </button>
+                    </div>
+                `;
+                contenedorListado.appendChild(preguntaDiv);
 
-                document.querySelectorAll(".btnResponder").forEach(btn => {
-                    btn.onclick = () => {
-                        const idPregunta = btn.dataset.id;
-                        const input = document.getElementById(`inputRespuesta_${idPregunta}`);
-                        const texto = input.value.trim();
-                        if (!texto) return;
-
-                        fetch("../processes/ForosRespuestaCrear.php", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: `id_pregunta_foro=${idPregunta}&descripcion=${encodeURIComponent(texto)}&id_rol_usuario=${idRol}`
-                        })
-                            .then(res => res.json())
-                            .then(resp => {
-                                if (resp.success) {
-                                    input.value = "";
-                                    cargarRespuestas(idPregunta);
-                                } else {
-                                    alert("Error al publicar respuesta.");
-                                }
-                            });
-                    };
-                });
+                cargarRespuestas(p.id_pregunta_foro);
             });
+
+            document.querySelectorAll(".btnResponder").forEach(btn => {
+                btn.onclick = () => {
+                    const idPregunta = btn.dataset.id;
+                    const input = document.getElementById(`inputRespuesta_${idPregunta}`);
+                    const texto = input.value.trim();
+                    if (!texto) return;
+
+                    fetch("../processes/ForosRespuestaCrear.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `id_pregunta_foro=${idPregunta}&descripcion=${encodeURIComponent(texto)}&id_rol_usuario=${idRol}`
+                    })
+                    .then(res => res.json())
+                    .then(resp => {
+                        if (resp.success) {
+                            input.value = "";
+                            cargarRespuestas(idPregunta);
+                        } else {
+                            alert("Error al publicar respuesta.");
+                        }
+                    });
+                };
+            });
+        });
     }
 
-    // ─────────────────────────────────────────────
-    // ========== CARGAR RESPUESTAS ==========
-    // ─────────────────────────────────────────────
     function cargarRespuestas(idPregunta) {
         fetch("../processes/ForosRespuestasCargar.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `id_pregunta_foro=${idPregunta}`
         })
-            .then(res => res.json())
-            .then(data => {
-                const contRespuestas = document.getElementById(`respuestas_${idPregunta}`);
-                contRespuestas.innerHTML = "";
-                if (!data.length) {
-                    contRespuestas.innerHTML = `<p style="color:gray;">Sin respuestas</p>`;
-                    return;
-                }
+        .then(res => res.json())
+        .then(data => {
+            const contRespuestas = document.getElementById(`respuestas_${idPregunta}`);
+            contRespuestas.innerHTML = "";
+            if (!data.length) {
+                contRespuestas.innerHTML = `<p style="color:gray;">Sin respuestas</p>`;
+                return;
+            }
 
-                data.forEach(r => {
-                    const rDiv = document.createElement("div");
-                    rDiv.style = "margin-top:3px; padding-left:5px;";
-                    rDiv.innerHTML = `
-                        <span>${r.descripcion}</span> 
-                        <small style="color:gray;">(${r.fecha})</small>
-                    `;
-                    contRespuestas.appendChild(rDiv);
-                });
+            data.forEach(r => {
+                const rDiv = document.createElement("div");
+                rDiv.style = "margin-top:3px; padding-left:5px;";
+                rDiv.innerHTML = `
+                    <span>${r.rol}. ${r.usuario}: ${r.descripcion}</span> 
+                    <small style="color:gray;">(${r.fecha})</small>
+                `;
+                contRespuestas.appendChild(rDiv);
             });
+        });
     }
 
-    // ========== PUBLICAR PREGUNTA ==========
+    // ========== PUBLICAR NUEVA PREGUNTA ==========
     document.getElementById("btnPublicarPregunta").onclick = () => {
         const texto = document.getElementById("inputNuevaPregunta").value.trim();
         if (!texto) return;
@@ -173,17 +166,17 @@ export function cargarPreguntasForo({ idRol, idForo }) {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `descripcion=${encodeURIComponent(texto)}&id_rol_usuario=${idRol}&id_foro=${idForo}`
         })
-            .then(res => res.json())
-            .then(resp => {
-                if (resp.success) {
-                    document.getElementById("inputNuevaPregunta").value = "";
-                    cargarPreguntas();
-                } else {
-                    alert("Error al publicar la pregunta.");
-                }
-            });
+        .then(res => res.json())
+        .then(resp => {
+            if (resp.success) {
+                document.getElementById("inputNuevaPregunta").value = "";
+                cargarPreguntas();
+            } else {
+                alert("Error al publicar la pregunta.");
+            }
+        });
     };
 
-    // Cargar de inicio
+    // Cargar preguntas al inicio
     cargarPreguntas();
 }

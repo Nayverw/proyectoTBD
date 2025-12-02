@@ -1,7 +1,8 @@
 // C:\xampp\htdocs\proyectoTBD\scripts\ForosEstudiantes.js
+import { cargarPreguntasForo } from "./ForosPreguntasEstudiante.js";
 
 export function mostrarContenidoForo({ idRol, nombreUsuario }) {
-    console.log("ForosEstudiantes.js cargado correctamente.");
+    console.log("ForosEstudiantes.js cargado correctamente");
 
     let foroSeleccionado = null;
 
@@ -22,7 +23,6 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
             overflow: hidden;
             background-color: #5C62E6;
         ">
-
             <h2 style="text-align:center; color:white; margin-bottom:15px;">
                 Foros de tus cursos
             </h2>
@@ -57,55 +57,58 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id_rol_usuario=${idRol}`
     })
-        .then(res => res.json())
-        .then(lista => {
-            const contSup = document.getElementById("contenedorForosSuperior");
-            contSup.innerHTML = "";
+    .then(res => res.json())
+    .then(lista => {
+        const contSup = document.getElementById("contenedorForosSuperior");
+        contSup.innerHTML = "";
 
-            if (!lista.length) {
-                contSup.innerHTML = `<p style="color:white;">No hay foros disponibles.</p>`;
-                return;
-            }
+        if (!lista.length) {
+            contSup.innerHTML = `<p style="color:white;">No hay foros disponibles.</p>`;
+            return;
+        }
 
-            lista.forEach(f => {
-                const item = document.createElement("div");
-                item.dataset.idForo = f.id_foro;
+        lista.forEach(f => {
+    const item = document.createElement("div");
+    item.dataset.idForo = f.id_foro;
+    item.dataset.tituloForo = f.titulo; // <--- asignamos el título
 
-                item.style = `
-                    min-width: 180px;
-                    height: 220px;
-                    background: #84C3F5;
-                    border-radius: 10px;
-                    padding: 10px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    align-items: center;
-                    text-align: center;
-                    flex-shrink: 0;
-                    cursor: pointer;
-                    border: 2px solid transparent;
-                `;
+    item.style = `
+        min-width: 180px;
+        height: 220px;
+        background: #84C3F5;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+        flex-shrink: 0;
+        cursor: pointer;
+        border: 2px solid transparent;
+    `;
 
-                item.innerHTML = `
-                    <strong style="font-size:16px; color:white;">${f.titulo}</strong>
-                    <img src="../img/foro.jpeg" alt="${f.titulo}"
-                        style="width:150px; height:150px; object-fit:cover; border-radius:5px;">
-                    <p style="font-size:13px; color:white; margin-top:5px;">${f.descripcion}</p>
-                `;
+    item.innerHTML = `
+        <strong style="font-size:16px; color:white;">${f.titulo}</strong>
+        <img src="../img/foro.jpeg" alt="${f.titulo}"
+            style="width:150px; height:150px; object-fit:cover; border-radius:5px;">
+        <p style="font-size:13px; color:white; margin-top:5px;">${f.descripcion}</p>
+    `;
 
-                contSup.appendChild(item);
-            });
-        });
+    contSup.appendChild(item);
+});
+
+    });
 
     // === SELECCIÓN DE FORO ===
     const contenedorForosSuperior = document.getElementById("contenedorForosSuperior");
 
-    contenedorForosSuperior.addEventListener("click", function (e) {
+    contenedorForosSuperior.addEventListener("click", function(e) {
         const foroItem = e.target.closest("div[data-id-foro]");
         if (!foroItem) return;
 
         foroSeleccionado = foroItem.dataset.idForo;
+        const tituloForoSeleccionado = foroItem.dataset.tituloForo;
 
         // Quitar resaltado
         contenedorForosSuperior.querySelectorAll("div[data-id-foro]")
@@ -143,14 +146,11 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         };
 
         btn.onclick = () => {
-            import("./ForosPreguntasEstudiante.js").then(mod => {
-                mod.cargarPreguntasForo({
-                    idRol,
-                    idForo: foroSeleccionado,
-                    origen: "estudiante"
-                });
+            cargarPreguntasForo({
+                idRol,
+                idForo: foroSeleccionado,
+                tituloForo: tituloForoSeleccionado
             });
         };
     });
-
 }

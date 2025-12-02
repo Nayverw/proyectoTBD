@@ -11,12 +11,11 @@ if (!isset($_POST['descripcion'], $_POST['id_rol_usuario'], $_POST['id_foro'])) 
 $descripcion = trim($_POST['descripcion']);
 $idRolUsuario = intval($_POST['id_rol_usuario']);
 $idForo = intval($_POST['id_foro']);
-$fecha = date("Y-m-d H:i:s");
 
 require_once "../conexion.php";
 
-$query = $conn->prepare("INSERT INTO PREGUNTA_FORO (descripcion, fecha, id_rol_usuario, id_foro) VALUES (?, ?, ?, ?)");
-$query->bind_param("ssii", $descripcion, $fecha, $idRolUsuario, $idForo);
+$query = $conn->prepare("INSERT INTO PREGUNTA_FORO (descripcion, fecha, id_rol_usuario, id_foro) VALUES (?, NOW(), ?, ?)");
+$query->bind_param("sii", $descripcion, $idRolUsuario, $idForo);
 
 if ($query->execute()) {
     echo json_encode(["success" => true]);

@@ -1,13 +1,11 @@
-// C:\xampp\htdocs\proyectoTBD\scripts\ForosCargar.js
-
 import { mostrarForoSeleccionado } from "./ForosSeleccionado.js";
 
 export function cargarMisForos({ idRol }) {
     console.log("ForosCargar.js cargado correctamente");
 
     let foroSeleccionado = null;
+    let tituloForoSeleccionado = "";
 
-    // Se usa la zona dinámica del docente
     const zona = document.getElementById("zonaDinamica");
 
     zona.innerHTML = `
@@ -38,67 +36,70 @@ export function cargarMisForos({ idRol }) {
         "></div>
     `;
 
-    // === CARGAR FOROS ===
     fetch("../processes/ForosDocente.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id_rol_usuario=${idRol}`
     })
-        .then(res => res.json())
-        .then(data => {
-            const contenedorForos = document.getElementById("contenedorForosSuperior");
-            contenedorForos.innerHTML = "";
+    .then(res => res.json())
+    .then(data => {
+        const contenedorForos = document.getElementById("contenedorForosSuperior");
+        contenedorForos.innerHTML = "";
 
-            if (!data.length) {
-                contenedorForos.innerHTML = `<p style="color:white;">No tienes foros creados.</p>`;
-                return;
-            }
+        if (!data.length) {
+            contenedorForos.innerHTML = `<p style="color:white;">No tienes foros creados.</p>`;
+            return;
+        }
 
-            data.forEach(foro => {
-                const card = document.createElement("div");
-                card.dataset.idForo = foro.id_foro;
+        data.forEach(foro => {
+            const card = document.createElement("div");
 
-                card.style = `
-                    min-width: 180px;
-                    height: 220px;
-                    background: #84C3F5;
-                    border-radius: 10px;
-                    padding: 10px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    align-items: center;
-                    text-align: center;
-                    flex-shrink: 0;
-                    cursor: pointer;
-                    border: 2px solid transparent;
-                `;
+            // Guardamos id y título del foro como atributos
+            card.setAttribute("data-id-foro", foro.id_foro);
+            card.setAttribute("data-titulo-foro", foro.titulo);
 
-                card.innerHTML = `
-                    <strong style="font-size:16px; color:white;">${foro.titulo}</strong>
-                    <img src="../img/foro.jpeg" alt="${foro.titulo}"
-                        style="width:150px; height:150px; object-fit:cover; border-radius:5px;">
-                    <p style="font-size:13px; color:white; margin-top:5px;">${foro.descripcion}</p>
-                `;
+            card.style = `
+                min-width: 180px;
+                height: 220px;
+                background: #84C3F5;
+                border-radius: 10px;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                text-align: center;
+                flex-shrink: 0;
+                cursor: pointer;
+                border: 2px solid transparent;
+            `;
 
-                contenedorForos.appendChild(card);
-            });
-        })
-        .catch(err => {
-            console.error("Error cargando foros:", err);
-            document.getElementById("contenedorForosSuperior").innerHTML =
-                `<p style="color:white;">Error al cargar los foros.</p>`;
+            card.innerHTML = `
+                <strong style="font-size:16px; color:white;">${foro.titulo}</strong>
+                <img src="../img/foro.jpeg" alt="${foro.titulo}"
+                    style="width:150px; height:150px; object-fit:cover; border-radius:5px;">
+                <p style="font-size:13px; color:white; margin-top:5px;">${foro.descripcion}</p>
+            `;
+
+            contenedorForos.appendChild(card);
         });
+    })
+    .catch(err => {
+        console.error("Error cargando foros:", err);
+        document.getElementById("contenedorForosSuperior").innerHTML =
+            `<p style="color:white;">Error al cargar los foros.</p>`;
+    });
 
-    // === SELECCIONAR FORO ===
     const contenedorForosSuperior = document.getElementById("contenedorForosSuperior");
 
     contenedorForosSuperior.addEventListener("click", function (e) {
         const item = e.target.closest("div[data-id-foro]");
         if (!item) return;
 
-        foroSeleccionado = item.dataset.idForo;
-        console.log("Foro seleccionado:", foroSeleccionado);
+        foroSeleccionado = item.getAttribute("data-id-foro");
+        tituloForoSeleccionado = item.getAttribute("data-titulo-foro");
+
+        console.log("Foro seleccionado:", foroSeleccionado, "Título:", tituloForoSeleccionado);
 
         contenedorForosSuperior
             .querySelectorAll("div[data-id-foro]")
@@ -139,14 +140,13 @@ export function cargarMisForos({ idRol }) {
         btn.onclick = () => {
             console.log("ENTRAR AL FORO ->", foroSeleccionado, "ROL:", idRol);
 
-            // Llamamos directamente a ForosPreguntas.js y pasamos contenido-central
             import("./ForosPreguntasDocente.js").then(mod => {
                 mod.cargarPreguntasForo({
                     idRol,
-                    idForo: foroSeleccionado
+                    idForo: foroSeleccionado,
+                    tituloForo: tituloForoSeleccionado
                 });
             });
         };
-
     });
 }
