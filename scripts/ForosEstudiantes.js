@@ -160,7 +160,15 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         // Acción cuando se hace click
         btn.onclick = () => {
             console.log("Ingresar al foro:", foroSeleccionado);
+
+            import("./ForosPreguntas.js").then(mod => {
+                mod.cargarPreguntasForo({
+                    idRol,
+                    idForo: foroSeleccionado
+                });
+            });
         };
+
     });
 
 }

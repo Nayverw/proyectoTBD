@@ -139,10 +139,14 @@ export function cargarMisForos({ idRol }) {
         btn.onclick = () => {
             console.log("ENTRAR AL FORO ->", foroSeleccionado, "ROL:", idRol);
 
-            mostrarForoSeleccionado({
-                idRol,
-                idForo: foroSeleccionado
+            // Llamamos directamente a ForosPreguntas.js y pasamos contenido-central
+            import("./ForosPreguntas.js").then(mod => {
+                mod.cargarPreguntasForo({
+                    idRol,
+                    idForo: foroSeleccionado
+                });
             });
         };
+
     });
 }
