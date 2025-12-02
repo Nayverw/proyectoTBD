@@ -246,7 +246,7 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
                     font-weight:bold;
                     font-size:18px;
                   ">X</span>
-                  <p style="font-size:18px;">❌ Puntos insuficientes</p>
+                  <p style="font-size:18px;">❌ Item de Canjear seminario valido necesario</p>
                   <button id="btnCerrarIns" style="
                     background-color:red;
                     color:white;
