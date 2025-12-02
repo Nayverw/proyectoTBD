@@ -47,8 +47,7 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
                 margin-top: 20px;
                 display: flex;
                 justify-content: center;
-            ">
-            </div>
+            "></div>
         </div>
     `;
 
@@ -97,26 +96,16 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
 
                 contSup.appendChild(item);
             });
-        })
-        .catch(err => {
-            console.error("Error cargando foros:", err);
-            document.getElementById("contenedorForosSuperior").innerHTML =
-                `<p style="color:red;">Error cargando foros.</p>`;
         });
 
-
-    // === LISTENER SOLO DENTRO DEL CONTENEDOR DE FOROS ===
-    // === LISTENER SOLO DENTRO DEL CONTENEDOR DE FOROS ===
+    // === SELECCIÓN DE FORO ===
     const contenedorForosSuperior = document.getElementById("contenedorForosSuperior");
 
     contenedorForosSuperior.addEventListener("click", function (e) {
-
         const foroItem = e.target.closest("div[data-id-foro]");
-
         if (!foroItem) return;
 
         foroSeleccionado = foroItem.dataset.idForo;
-        console.log("Foro seleccionado:", foroSeleccionado);
 
         // Quitar resaltado
         contenedorForosSuperior.querySelectorAll("div[data-id-foro]")
@@ -125,26 +114,22 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
         // Resaltar seleccionado
         foroItem.style.border = "2px solid blue";
 
-        // Agregar botón debajo
         const contBoton = document.getElementById("contenedorBotonIngresar");
 
         contBoton.innerHTML = `
-        <button id="btnIngresarForo" style="
-            background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 0;
-            font-size: 15px;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-            width: 50%;
-        ">
-            Ingresar
-        </button>
-    `;
+            <button id="btnIngresarForo" style="
+                background: linear-gradient(135deg, #90caf9 0%, #42a5f5 100%);
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 0;
+                font-size: 15px;
+                cursor: pointer;
+                transition: transform 0.2s, background 0.3s;
+                width: 50%;
+            ">Ingresar</button>
+        `;
 
-        // Hover dinámico (porque inline no permite :hover)
         const btn = document.getElementById("btnIngresarForo");
 
         btn.onmouseenter = () => {
@@ -157,18 +142,15 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
             btn.style.transform = "scale(1)";
         };
 
-        // Acción cuando se hace click
         btn.onclick = () => {
-            console.log("Ingresar al foro:", foroSeleccionado);
-
-            import("./ForosPreguntas.js").then(mod => {
+            import("./ForosPreguntasEstudiante.js").then(mod => {
                 mod.cargarPreguntasForo({
                     idRol,
-                    idForo: foroSeleccionado
+                    idForo: foroSeleccionado,
+                    origen: "estudiante"
                 });
             });
         };
-
     });
 
 }

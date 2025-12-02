@@ -140,7 +140,7 @@ export function cargarMisForos({ idRol }) {
             console.log("ENTRAR AL FORO ->", foroSeleccionado, "ROL:", idRol);
 
             // Llamamos directamente a ForosPreguntas.js y pasamos contenido-central
-            import("./ForosPreguntas.js").then(mod => {
+            import("./ForosPreguntasDocente.js").then(mod => {
                 mod.cargarPreguntasForo({
                     idRol,
                     idForo: foroSeleccionado
