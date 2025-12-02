@@ -2,7 +2,7 @@
 
 export function mostrarContenidoForo({ idRol, nombreUsuario }) {
     console.log("ForosDocentes.js cargado correctamente.");
-
+    console.log("id_rol_usuario recibido en Foros.js:", idRol);
     const contenedor = document.getElementById("contenido-central");
 
     /* ------------------------------------------------------------------
@@ -175,6 +175,7 @@ export function mostrarContenidoForo({ idRol, nombreUsuario }) {
     /* ------------------------------------------------------------------
        FUNCIÓN: Crear foro
     ------------------------------------------------------------------ */
+    //Para bitacora
     function prepararCreacionForo() {
         document.getElementById("btnCrearForo").onclick = () => {
             const titulo = document.getElementById("inputTitulo").value.trim();

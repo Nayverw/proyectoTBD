@@ -2,6 +2,7 @@
 
 export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
   const contenedor = document.getElementById("contenido-central");
+  console.log("id_rol_usuario recibido en Foros.js:", idRolUsuario);
   contenedor.innerHTML = `
     <div style="text-align:center; font-size:1.3em; color:#555; padding:40px;">
       Verificando rol del usuario...
@@ -25,18 +26,21 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       if (data.rol === "Estudiante") {
         import("./ForosEstudiantes.js").then(mod => {
           mod.mostrarContenidoForo({
-            idRol: data.idRol,
-            nombreUsuario: nombreUsuario
+            idRol: data.idRolUsuario,
+            nombreUsuario
           });
         });
-      } else if (data.rol === "Docente") {
+      }
+      else if (data.rol === "Docente") {
         import("./ForosDocentes.js").then(mod => {
           mod.mostrarContenidoForo({
-            idRol: data.idRol,
-            nombreUsuario: nombreUsuario
+            idRol: data.idRolUsuario,
+            nombreUsuario
           });
+
         });
-      } else {
+      }
+      else {
         contenedor.innerHTML = `<div style="color:red; padding:40px;">Rol no reconocido.</div>`;
       }
     });

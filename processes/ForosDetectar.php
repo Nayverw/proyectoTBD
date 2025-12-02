@@ -10,7 +10,7 @@ if (!isset($_POST['id_rol_usuario'])) {
 
 $idRolUsuario = intval($_POST['id_rol_usuario']);
 
-require_once "../conexion.php"; // Ajusta si tu archivo conexión tiene otro nombre
+require_once "../conexion.php";
 
 // 1. Obtener id_rol desde ROL_USUARIO
 $query1 = $conn->prepare("SELECT id_rol FROM ROL_USUARIO WHERE id_rol_usuario = ?");
@@ -40,8 +40,8 @@ if ($result2->num_rows === 0) {
 $row2 = $result2->fetch_assoc();
 $nombreRol = $row2["nombre"];
 
-// Respuesta final
+// Respuesta final SOLO LO NECESARIO
 echo json_encode([
-    "idRol" => $idRol,
+    "idRolUsuario" => $idRolUsuario,
     "rol" => $nombreRol
 ]);
