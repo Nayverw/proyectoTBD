@@ -1,16 +1,9 @@
 <?php
-// processes/retirarseCurso.php
 header('Content-Type: application/json; charset=utf-8');
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// Conexión
-$conexionPath = __DIR__ . '/../conexion.php';
-if (!file_exists($conexionPath)) {
-    echo json_encode(["success" => false, "error" => "No se encontró conexion.php"]);
-    exit();
-}
-include_once($conexionPath);
+include_once(__DIR__ . '/../conexion.php');
 
 // Validación
 if (!isset($_POST['id_curso']) || !isset($_POST['id_rol_usuario'])) {
@@ -22,18 +15,39 @@ $id_curso = intval($_POST['id_curso']);
 $id_rol_usuario = intval($_POST['id_rol_usuario']);
 
 try {
-    // Eliminar la inscripción REAL
-    $sql = "DELETE FROM INSCRIPCION WHERE id_curso = ? AND id_rol_usuario = ?";
-    $stmt = $conn->prepare($sql);
 
-    if (!$stmt) {
-        throw new Exception("Error en la preparación: " . $conn->error);
+    // 1️⃣  Buscar la inscripción
+    $sqlGet = "SELECT id_inscripcion FROM inscripcion WHERE id_curso = ? AND id_rol_usuario = ?";
+    $stmtGet = $conn->prepare($sqlGet);
+    $stmtGet->bind_param("ii", $id_curso, $id_rol_usuario);
+    $stmtGet->execute();
+    $res = $stmtGet->get_result();
+
+    if ($res->num_rows === 0) {
+        echo json_encode(["success" => false, "error" => "No estabas inscrito en este curso"]);
+        exit();
     }
 
-    $stmt->bind_param("ii", $id_curso, $id_rol_usuario);
-    $stmt->execute();
+    $row = $res->fetch_assoc();
+    $id_inscripcion = $row['id_inscripcion'];
+    $stmtGet->close();
 
-    if ($stmt->affected_rows > 0) {
+
+    // 2️⃣  Borrar primero de pago
+    $sqlPago = "DELETE FROM pago WHERE id_inscripcion = ?";
+    $stmtPago = $conn->prepare($sqlPago);
+    $stmtPago->bind_param("i", $id_inscripcion);
+    $stmtPago->execute();
+    $stmtPago->close();
+
+
+    // 3️⃣  Borrar inscripción
+    $sqlDel = "DELETE FROM inscripcion WHERE id_inscripcion = ?";
+    $stmtDel = $conn->prepare($sqlDel);
+    $stmtDel->bind_param("i", $id_inscripcion);
+    $stmtDel->execute();
+
+    if ($stmtDel->affected_rows > 0) {
         echo json_encode([
             "success" => true,
             "mensaje" => "Te has retirado del curso exitosamente."
@@ -41,11 +55,11 @@ try {
     } else {
         echo json_encode([
             "success" => false,
-            "error" => "No estabas inscrito en este curso."
+            "error" => "Error inesperado: no se pudo retirar."
         ]);
     }
 
-    $stmt->close();
+    $stmtDel->close();
     $conn->close();
 
 } catch (Exception $e) {
