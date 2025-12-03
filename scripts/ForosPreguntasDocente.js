@@ -1,11 +1,12 @@
+// C:\xampp\htdocs\proyectoTBD\scripts\ForosPreguntasDocente.js
+
 export function cargarPreguntasForo({ idRol, idForo, tituloForo }) {
-    console.log("ForosPreguntasDocentes.js cargado correctamente");
+    console.log("ForosPreguntasDocente.js cargado correctamente");
 
     const contenedor = document.getElementById("contenido-central");
 
     contenedor.innerHTML = `
         <div style="width: 90%; margin: 20px auto;">
-            <!-- Título del foro centrado -->
             <h2 style="text-align:center; margin-bottom:15px;">${tituloForo}</h2>
 
             <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px;">
@@ -49,12 +50,36 @@ export function cargarPreguntasForo({ idRol, idForo, tituloForo }) {
                     <p>Cargando preguntas...</p>
                 </div>
             </div>
+
+            <!-- BOTÓN GENERAR REPORTE -->
+            <div style="text-align:center; margin-top:25px;">
+                <button id="btnGenerarReporte" style="
+                    padding: 10px 25px;
+                    border-radius: 20px;
+                    border:none;
+                    background:#42a5f5;
+                    color:white;
+                    cursor:pointer;
+                    font-size:16px;
+                ">
+                    📄 Generar Reporte
+                </button>
+            </div>
+
         </div>
     `;
 
+    // BOTÓN VOLVER
     document.getElementById("btnVolver").onclick = () => {
         import("./ForosDocentes.js").then(mod => {
             mod.mostrarContenidoForo({ idRol, nombreUsuario: "Docente" });
+        });
+    };
+
+    // BOTÓN GENERAR REPORTE
+    document.getElementById("btnGenerarReporte").onclick = () => {
+        import("./ForosReporte.js").then(mod => {
+            mod.mostrarReporteForo({ idRol, idForo, tituloForo });
         });
     };
 
