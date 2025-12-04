@@ -34,7 +34,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           <div style="overflow-x:auto;">
             <table style="width:100%; min-width:600px; border:2px solid black; border-spacing:0; border-radius:8px;">
               <thead>
-                <tr style="background-color:#06B897; color:white;">
+                <tr style="background-color:#2478F0; color:white;">
                   <th style="padding:10px; border:1px solid black;">Nro</th>
                   <th style="padding:10px; border:1px solid black;">Rareza</th>
                   <th style="padding:10px; border:1px solid black;">Nombre</th>
@@ -63,7 +63,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
           </div>
 
           <div style="margin-top:20px; text-align:center;">
-            <button class="menu-btn" id="btn-explorar">Explorar insignias</button>
+            <button class="menu-btn" id="btn-explorar" style="color:white">Explorar insignias</button>
           </div>
         </div>
       `;
