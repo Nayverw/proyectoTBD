@@ -3,6 +3,8 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 header('Content-Type: application/json');
 include("../conexion.php");
 
+$conn->begin_transaction();
+
 try {
     $id_curso = intval($_POST['id_curso'] ?? 0);
     $id_rol_usuario = intval($_POST['id_rol_usuario'] ?? 0);
@@ -18,13 +20,12 @@ try {
     $stmtCheck->bind_param("ii", $id_curso, $id_rol_usuario);
     $stmtCheck->execute();
     $resCheck = $stmtCheck->get_result();
-
     if($resCheck->num_rows > 0){
         throw new Exception("Ya estás inscrito en este curso");
     }
     $stmtCheck->close();
 
-    // Registrar inscripción (solo si el pago es válido)
+    // Registrar inscripción
     $stmtIns = $conn->prepare("INSERT INTO inscripcion (id_curso, id_rol_usuario, fecha_inscripcion, estado) VALUES (?, ?, NOW(), 'Activo')");
     $stmtIns->bind_param("ii", $id_curso, $id_rol_usuario);
     if (!$stmtIns->execute()) {
@@ -37,14 +38,13 @@ try {
     $stmtPago = $conn->prepare("INSERT INTO pago (id_inscripcion, fecha_pago, monto_pagado, tipo_pago) VALUES (?, NOW(), ?, ?)");
     $stmtPago->bind_param("ids", $id_inscripcion, $monto_pagado, $tipo_pago);
     if (!$stmtPago->execute()) {
-        // Si falla el pago, eliminamos la inscripción
         $conn->query("DELETE FROM inscripcion WHERE id_inscripcion = $id_inscripcion");
         throw new Exception("Error al registrar el pago: " . $stmtPago->error);
     }
     $id_pago = $stmtPago->insert_id;
     $stmtPago->close();
 
-    // Obtener info curso y docente
+    // Obtener info del curso y docente (solo preciopuntos y docente)
     $sqlCurso = "
         SELECT c.id_curso, c.preciopuntos, u.nombres, u.apellidos
         FROM curso c
@@ -58,15 +58,30 @@ try {
     $resCurso = $stmtCurso->get_result();
     $curso = $resCurso->fetch_assoc();
     $stmtCurso->close();
-    
+
+    // Actualizar puntos del estudiante usando preciopuntos
+    $puntosCurso = intval($curso['preciopuntos'] ?? 0);
+    if ($puntosCurso > 0) {
+        $stmtPuntos = $conn->prepare("
+            UPDATE gestion_puntos 
+            SET total_puntos_acumulados = total_puntos_acumulados + ?, 
+                total_puntos_actuales = total_puntos_actuales + ? 
+            WHERE id_rol_usuario = ?
+        ");
+        $stmtPuntos->bind_param("iii", $puntosCurso, $puntosCurso, $id_rol_usuario);
+        $stmtPuntos->execute();
+        $stmtPuntos->close();
+    }
+
     $conn->commit();
 
     echo json_encode([
         "success" => true,
+        "mensaje" => "Inscripción y pago exitosos. Has ganado $puntosCurso puntos.",
         "voucher" => [
             "id_pago" => $id_pago,
-            "curso" => $curso['nombre_curso'],
-            "precio" => $curso['preciopuntos'],
+            "id_curso" => $curso['id_curso'],
+            "precio_puntos" => $curso['preciopuntos'],
             "docente" => trim($curso['nombres']." ".$curso['apellidos']),
             "fecha_pago" => date("d-m-Y H:i:s"),
             "monto_pagado" => $monto_pagado,

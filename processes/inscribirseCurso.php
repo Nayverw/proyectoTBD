@@ -2,7 +2,6 @@
 header('Content-Type: application/json');
 include("../conexion.php");
 
-// 🔹 Obtener datos del formulario (enviados por JS)
 $id_curso = intval($_POST['id_curso'] ?? 0);
 $id_rol_usuario = intval($_POST['id_rol_usuario'] ?? 0);
 
@@ -11,28 +10,37 @@ if (!$id_curso || !$id_rol_usuario) {
     exit();
 }
 
-// 🔹 Verificar si ya está inscrito
+// Verificar si ya está inscrito
 $sqlCheck = "SELECT * FROM inscripcion WHERE id_curso = ? AND id_rol_usuario = ?";
 $stmtCheck = $conn->prepare($sqlCheck);
 $stmtCheck->bind_param("ii", $id_curso, $id_rol_usuario);
 $stmtCheck->execute();
 $result = $stmtCheck->get_result();
-
 if ($result->num_rows > 0) {
     echo json_encode(["success" => false, "mensaje" => "Ya estás inscrito en este curso."]);
     exit();
 }
 $stmtCheck->close();
 
-// 🔹 Datos obligatorios para insertar
+// Obtener puntos del curso
+$sqlCurso = "SELECT preciopuntos FROM curso WHERE id_curso = ?";
+$stmtCurso = $conn->prepare($sqlCurso);
+$stmtCurso->bind_param("i", $id_curso);
+$stmtCurso->execute();
+$resCurso = $stmtCurso->get_result();
+$curso = $resCurso->fetch_assoc();
+$stmtCurso->close();
+
+$puntosCurso = intval($curso['preciopuntos'] ?? 0);
+
+// Insertar inscripción
 $fecha_inscripcion = date("Y-m-d H:i:s");
 $fecha_finalizacion = null;
-$costo = 0; // Puedes ajustarlo más adelante según curso
-$modalidad = "Online"; // Valor por defecto
+$costo = 0;
+$modalidad = "Online";
 $progreso = 0;
 $estado = "Activo";
 
-// 🔹 Insertar en la tabla INSCRIPCION
 $sqlInsert = "
     INSERT INTO inscripcion 
     (fecha_inscripcion, fecha_finalizacion, costo, modalidad, progreso, estado, id_curso, id_rol_usuario)
@@ -52,7 +60,21 @@ $stmt->bind_param(
 );
 
 if ($stmt->execute()) {
-    echo json_encode(["success" => true, "mensaje" => "✅ Inscripción exitosa al curso."]);
+
+    // Actualizar puntos del usuario
+    $sqlGestion = "UPDATE gestion_puntos 
+                   SET total_puntos_acumulados = total_puntos_acumulados + ?, 
+                       total_puntos_actuales = total_puntos_actuales + ? 
+                   WHERE id_rol_usuario = ?";
+    $stmtGestion = $conn->prepare($sqlGestion);
+    $stmtGestion->bind_param("iii", $puntosCurso, $puntosCurso, $id_rol_usuario);
+    $stmtGestion->execute();
+    $stmtGestion->close();
+
+    echo json_encode([
+        "success" => true,
+        "mensaje" => "✅ Inscripción exitosa al curso. Has ganado $puntosCurso puntos."
+    ]);
 } else {
     echo json_encode(["success" => false, "mensaje" => "❌ Error al inscribirse: " . $stmt->error]);
 }

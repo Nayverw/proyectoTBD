@@ -439,3 +439,229 @@ body {
     color: #0a0a5c;
 }
 
+
+/* ============================================================
+   ========= MODAL INFORMACIÓN PARA OFERTA (TEXTO OSCURO) =====
+   ============================================================ */
+
+#modal-curso {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#modal-curso .modal-content {
+  background: white;
+  width: 420px;
+  padding: 25px;
+  border-radius: 12px;
+  color: #222 !important;     /* TEXTO OSCURO */
+}
+
+#modal-curso h2,
+#modal-curso p,
+#modal-curso span {
+  color: #222 !important;
+}
+
+.close-modal {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  #cursos-inscritos-container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .curso-rectangulo {
+    width: 100%;
+  }
+
+  #modal-curso .modal-content {
+    width: 90%;
+  }
+
+  .cursos-scroll {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======== LISTA DE ALUMNOS ======== */
+.lista-alumnos li {
+  color: #0a0a5c;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.lista-alumnos li span {
+  color: #444;
+}
+
+#ranking-table, #ranking-table th, #ranking-table td {
+    color: #004444; /* texto oscuro */
+}
+#ranking-table th {
+    color: white; /* encabezado */
+}
+
+.search-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    /* 🔼 Súbelo un poquito */
+    margin-top: -15px;
+
+    /* ➡️ Empuja hacia la derecha */
+    padding-right: 40px;
+}
+
+
+.bienvenida-text {
+    margin: 0;
+
+    /* 🔼 Un poco más arriba */
+    margin-top: -5px;
+
+    /* ➡️ Más a la derecha */
+    padding-left: 20px;
+
+    font-size: 18px;
+    font-weight: bold;
+    color: #0a0a5c;
+}
+
+/* Modal base */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* Botón cerrar */
+.close-modal {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-modal:hover {
+    color: #f00;
+}
+
+/* Encabezado */
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    color: #333;
+}
+
+/* Voucher detalle */
+#voucher-detalle p {
+    margin: 6px 0;
+    font-size: 1em;
+    color: #444;
+}
+
+#voucher-detalle strong {
+    color: #222;
+}
+
+/* Botón cerrar voucher */
+#btn-cerrar-voucher {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #2E8BFF;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#btn-cerrar-voucher:hover {
+    background-color: #1A6FCC;
+}
+/* Contenedor del título */
+.oferta-header {
+    flex: 0 0 auto; /* no se expande, mantiene altura mínima */
+    padding: 10px 0;
+    background-color: white;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    z-index: 5;
+}
+
+/* Scroll de las tarjetas de oferta */
+#oferta-scroll {
+    flex: 1; /* ocupa el resto del espacio disponible */
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* dos columnas */
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Scroll visual */
+#oferta-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+#oferta-scroll::-webkit-scrollbar-thumb {
+    background-color: #06B897;
+    border-radius: 4px;
+}
+
+#oferta-scroll::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 4px;
+}
+
+/* Responsive: una columna en móviles */
+@media (max-width: 768px) {
+    #oferta-scroll {
+        grid-template-columns: 1fr;
+    }
+}
