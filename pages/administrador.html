@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador</title>
+    <link rel="stylesheet" href="../css/styles_administrador.css">
+</head>
+<body>
+
+    <!-- ====== TEXTO SOBRE EL CUADRADO BLANCO ====== -->
+    <div class="texto-superior">
+        <p>Bienvenido Administrador: </p>
+    </div>
+
+    <!-- ====== MENÚ LATERAL IZQUIERDO ====== -->
+    <div id="menu-left" class="menu-lateral">
+        <button id="btn-administrarCursos">Administrar Cursos</button>
+        <button id="btn-administrarRecompensas">Administrar Recompensas</button>
+        <button id="btn-administrarAlumnos">Administrar Alumnos</button>
+        <button id="btn-administrarDocentes">Administrar Docentes</button>
+        <button id="btn-cerrar" class="btn-cerrar-menu">Cerrar sesión</button>
+    </div>
+    <button id="hamburger-left" class="hamburger">☰</button>
+
+    <!-- ====== MENÚ LATERAL DERECHO ====== -->
+    <div id="menu-right" class="menu-lateral">
+        <button id="btn-bitacoras">Bitácoras</button>
+        <button id="btn-reportes">Reportes</button>
+    </div>
+    <button id="hamburger-right" class="hamburger">☰</button>
+
+    <!-- ====== CUADRADO BLANCO CENTRAL ====== -->
+    <div id="contenido-central" class="contenido-central">
+        <div id="contenido-dinamico" class="contenido-dinamico">
+            <p style="text-align:center; color:#333;">Selecciona una opción del menú para comenzar.</p>
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/adminHome.js"></script>
+</body>
+</html>

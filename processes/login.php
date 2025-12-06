@@ -52,7 +52,12 @@ if ($resultado && $resultado->num_rows === 1) {
             sessionStorage.setItem('correo', '$correo');
             sessionStorage.setItem('nombre_usuario', '$nombre_completo');
             sessionStorage.setItem('rol_usuario', '$rol_nombre'); 
+            // 🔹 NUEVA LÓGICA: redirigir según rol
+            if ('$rol_nombre' === 'ADMINISTRADOR') {
+            window.location.href = '../pages/administrador.html';
+            } else {
             window.location.href = '../pages/inicio.html';
+            }
         </script>
         ";
         exit();
