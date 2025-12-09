@@ -41,9 +41,19 @@ if ($resultado && $resultado->num_rows === 1) {
 
     if ($contrasena === $contrasenia_guardada) {
 
-        // Guardar en sesión PHP si quieres
+        // Guardar en sesión PHP
         $_SESSION['correo'] = $correo;
         $_SESSION['id_rol_usuario'] = $id_rol_usuario;
+
+        // 🔹 Registrar en BITÁCORA un inicio de sesión exitoso
+        $sqlBitacora = "
+            INSERT INTO bitacora (accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
+            VALUES ('Inicio de sesión', 'El usuario ingresó correctamente al sistema', 'login', ?, NOW(), 1)
+        ";
+        $stmtBit = $conn->prepare($sqlBitacora);
+        $stmtBit->bind_param("i", $id_rol_usuario);
+        $stmtBit->execute();
+        $stmtBit->close();
 
         // 🔹 Guardar datos en sessionStorage y redirigir
         echo "
@@ -52,18 +62,20 @@ if ($resultado && $resultado->num_rows === 1) {
             sessionStorage.setItem('correo', '$correo');
             sessionStorage.setItem('nombre_usuario', '$nombre_completo');
             sessionStorage.setItem('rol_usuario', '$rol_nombre'); 
-            // 🔹 NUEVA LÓGICA: redirigir según rol
+
             if ('$rol_nombre' === 'ADMINISTRADOR') {
-            window.location.href = '../pages/administrador.html';
+                window.location.href = '../pages/administrador.html';
             } else {
-            window.location.href = '../pages/inicio.html';
+                window.location.href = '../pages/inicio.html';
             }
         </script>
         ";
         exit();
+
     } else {
         mostrarError("Usuario o contraseña incorrecta", "La contraseña ingresada no es válida.");
     }
+
 } else {
     mostrarError("Usuario o contraseña incorrecta", "El correo ingresado no está registrado.");
 }

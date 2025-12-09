@@ -106,3 +106,42 @@ body {
     color: #333;
     font-size: 1em;
 }
+
+/* ==========================================
+   bitacora.css (TODO NUEVO Y SEPARADO)
+   ========================================== */
+
+.bit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+.bit-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.20);
+    text-align: center;
+}
+
+.bit-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.bit-btn {
+    background: #0069d9;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.bit-btn:hover {
+    background: #004a9f;
+}
+

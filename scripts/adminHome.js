@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ====== BOTONES DEL MENÚ ======
     const botones = {
-        "btn-administrarCursos": "AdministrarCursos",
+        "btn-administrarCursos": "adm_cursos",
         "btn-administrarRecompensas": "AdministrarRecompensas",
         "btn-administrarAlumnos": "AdministrarAlumnos",
         "btn-administrarDocentes": "AdministrarDocentes",
