@@ -76,8 +76,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         </div>
     `;
 
-    // ====== REFERENCIAS ======
-    const botones = contenedor.querySelectorAll(".boton-azul");
+    const botonesMenu = contenedor.querySelectorAll(".boton-azul");
     const panel = contenedor.querySelector("#reporte-contenido");
 
     // ====== SUBMENÚS DEFINIDOS ======
@@ -109,24 +108,69 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
             "Reporte especifico",
             "Reporte de descuentos",
             "Reporte de cursos"
+        ],
+        docentes: [
+            "Reporte de actividad",
+            "Reporte de examenes"
+        ],
+        gamificacion: [
+            "Reporte de ranking de estudiantes",
+            "Reporte de insignias otorgadas"
+        ],
+        administrativo: [
+            "Reporte de asistencia",
+            "Reporte de inscritos",
+            "Reporte de seguimiento"
         ]
     };
 
+    // === ARCHIVOS A DONDE REDIRIGEN LOS SUBMENÚS ===
+    const archivosRedireccion = {
+        "Reporte de actividad": "./ReporteDocenteActividad.js",
+        "Reporte de examenes": "./ReporteDocenteExamen.js",
+        "Reporte de certificaciones emitidas": "./ReporteCertificacionEmitida.js"
+    };
+
     // ====== EVENTOS DE BOTONES PRINCIPALES ======
-    botones.forEach(btn => {
+    botonesMenu.forEach(btn => {
         btn.addEventListener("click", () => {
             const tipo = btn.getAttribute("data-reporte");
 
-            // Si tiene submenú
             if (submenus[tipo]) {
                 panel.innerHTML = `
                     <h3 style="color:#333;">${btn.textContent}</h3>
                     <div class="submenu-grid">
                         ${submenus[tipo].map(sub => `
-                            <button class="boton-azul">${sub}</button>
+                            <button class="boton-azul submenu-item" data-submenu="${sub}">
+                                ${sub}
+                            </button>
                         `).join("")}
                     </div>
                 `;
+
+                // Activar eventos de los submenús
+                const botonesSubmenu = panel.querySelectorAll(".submenu-item");
+
+                botonesSubmenu.forEach(subBtn => {
+                    subBtn.addEventListener("click", () => {
+                        const nombre = subBtn.getAttribute("data-submenu");
+
+                        // Si está definido un archivo para ese botón → redirige
+                        if (archivosRedireccion[nombre]) {
+                            import(archivosRedireccion[nombre]).then(modulo => {
+                                modulo.mostrarContenido({ idRolUsuario, nombreUsuario });
+                            });
+                        } else {
+                            panel.innerHTML = `
+                                <h3 style="color:#333;">${nombre}</h3>
+                                <p style="margin-top:15px; font-size:1.1em;">
+                                    Lógica aún no implementada.
+                                </p>
+                            `;
+                        }
+                    });
+                });
+
                 return;
             }
 
