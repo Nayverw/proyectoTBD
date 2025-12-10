@@ -92,6 +92,23 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         puntos: [
             "Reporte de saldos",
             "Reporte de ranking"
+        ],
+        recompensas: [
+            "Reporte de recompensas canjeadas",
+            "Reporte de raking de estudiantes"
+        ],
+        cursos: [
+            "Reporte de cursos populares",
+            "Reporte de cupos"
+        ],
+        certificaciones: [
+            "Reporte de certificaciones emitidas"
+        ],
+        pagos: [
+            "Reporte de ingresos",
+            "Reporte especifico",
+            "Reporte de descuentos",
+            "Reporte de cursos"
         ]
     };
 
