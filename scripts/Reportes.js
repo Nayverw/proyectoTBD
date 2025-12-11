@@ -128,7 +128,8 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
     const archivosRedireccion = {
         "Reporte de actividad": "./ReporteDocenteActividad.js",
         "Reporte de examenes": "./ReporteDocenteExamen.js",
-        "Reporte de certificaciones emitidas": "./ReporteCertificacionEmitida.js"
+        "Reporte de certificaciones emitidas": "./ReporteCertificacionEmitida.js",
+        "Reporte de saldos": "./ReportePuntoSaldo.js"
     };
 
     // ====== EVENTOS DE BOTONES PRINCIPALES ======
