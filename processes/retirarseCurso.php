@@ -41,26 +41,52 @@ try {
     $stmtPago->close();
 
 
-    // 3️⃣  Borrar inscripción
-    $sqlDel = "DELETE FROM inscripcion WHERE id_inscripcion = ?";
-    $stmtDel = $conn->prepare($sqlDel);
-    $stmtDel->bind_param("i", $id_inscripcion);
-    $stmtDel->execute();
+   // 3️⃣  Borrar inscripción
+$sqlDel = "DELETE FROM inscripcion WHERE id_inscripcion = ?";
+$stmtDel = $conn->prepare($sqlDel);
+$stmtDel->bind_param("i", $id_inscripcion);
+$stmtDel->execute();
 
-    if ($stmtDel->affected_rows > 0) {
-        echo json_encode([
-            "success" => true,
-            "mensaje" => "Te has retirado del curso exitosamente."
-        ]);
-    } else {
-        echo json_encode([
-            "success" => false,
-            "error" => "Error inesperado: no se pudo retirar."
-        ]);
-    }
+if ($stmtDel->affected_rows > 0) {
 
-    $stmtDel->close();
-    $conn->close();
+    // ===================================
+    //   BITÁCORA - RETIRO DE CURSO (TIPO 5)
+    // ===================================
+    $accion = "Retiro de curso";
+    $descripcion = "El usuario se retiró del curso con ID $id_curso";
+    $tabla = "inscripcion";
+
+    $sqlBit = "
+    INSERT INTO bitacora 
+    (accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
+    VALUES (?, ?, ?, ?, NOW(), 5)
+    ";
+
+    $stmtBit = $conn->prepare($sqlBit);
+    $stmtBit->bind_param("sssi", 
+        $accion,
+        $descripcion,
+        $tabla,
+        $id_rol_usuario
+    );
+    $stmtBit->execute();
+    $stmtBit->close();
+
+    echo json_encode([
+        "success" => true,
+        "mensaje" => "Te has retirado del curso exitosamente."
+    ]);
+
+} else {
+    echo json_encode([
+        "success" => false,
+        "error" => "Error inesperado: no se pudo retirar."
+    ]);
+}
+
+$stmtDel->close();
+$conn->close();
+
 
 } catch (Exception $e) {
     echo json_encode(["success" => false, "error" => $e->getMessage()]);

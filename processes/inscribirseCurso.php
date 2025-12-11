@@ -61,7 +61,9 @@ $stmt->bind_param(
 
 if ($stmt->execute()) {
 
-    // Actualizar puntos del usuario
+    // ================================
+    // ACTUALIZAR PUNTOS
+    // ================================
     $sqlGestion = "UPDATE gestion_puntos 
                    SET total_puntos_acumulados = total_puntos_acumulados + ?, 
                        total_puntos_actuales = total_puntos_actuales + ? 
@@ -71,10 +73,53 @@ if ($stmt->execute()) {
     $stmtGestion->execute();
     $stmtGestion->close();
 
+    // =========================================
+    // INSERTAR BITÁCORA DE INSCRIPCIÓN (TIPO 2)
+    // =========================================
+   $sqlBit = "
+INSERT INTO bitacora 
+(accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
+VALUES (?, ?, ?, ?, NOW(), 2)
+";
+$stmtBit = $conn->prepare($sqlBit);
+$stmtBit->bind_param("sssi", 
+    $accion,
+    $descripcion,
+    $tabla,
+    $id_rol_usuario
+);
+$stmtBit->execute();
+$stmtBit->close();
+
+
+
+
+    // =========================================
+    // INSERTAR BITÁCORA DE PUNTOS (TIPO 4)
+    // =========================================
+ $sqlBitPts = "
+INSERT INTO bitacora 
+(accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
+VALUES (Gano puntos, Usuario gano puntos, gestionPuntos, ?, NOW(), 4)
+";
+$stmtBitPts = $conn->prepare($sqlBitPts);
+$stmtBitPts->bind_param("i", 
+    $accionPts,
+    $descripcionPts,
+    $tablaPts,
+    $id_rol_usuario
+);
+$stmtBitPts->execute();
+$stmtBitPts->close();
+
+
+
+
     echo json_encode([
         "success" => true,
         "mensaje" => "✅ Inscripción exitosa al curso. Has ganado $puntosCurso puntos."
     ]);
+
 } else {
     echo json_encode(["success" => false, "mensaje" => "❌ Error al inscribirse: " . $stmt->error]);
 }

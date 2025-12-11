@@ -44,6 +44,24 @@ try {
     $id_pago = $stmtPago->insert_id;
     $stmtPago->close();
 
+    // =====================
+// Bitácora del pago (id_tipo_bitacora = 6)
+// =====================
+$accion = "Pago de curso";
+$descripcion = "El usuario ID $id_rol_usuario realizó un pago de $monto_pagado Bs. para el curso ID $id_curso";
+$tabla = "pago";
+$id_tipo_bitacora = 6;
+
+$sqlBit = "
+INSERT INTO bitacora (accion, descripcion, tabla_afectada, id_rol_usuario, id_tipo_bitacora, fecha)
+VALUES (?, ?, ?, ?, ?, NOW())
+";
+$stmtBit = $conn->prepare($sqlBit);
+$stmtBit->bind_param("sssii", $accion, $descripcion, $tabla, $id_rol_usuario, $id_tipo_bitacora);
+$stmtBit->execute();
+$stmtBit->close();
+
+
     // Obtener info del curso y docente (solo preciopuntos y docente)
     $sqlCurso = "
         SELECT c.id_curso, c.preciopuntos, u.nombres, u.apellidos
