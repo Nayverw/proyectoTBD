@@ -1,14 +1,18 @@
-<?php
+<?php 
+ob_clean(); // Limpia cualquier salida basura
 header('Content-Type: application/json; charset=utf-8');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include("../conexion.php");
 
 // Leer datos del POST
 $nombre = trim($_POST['nombre_examen'] ?? '');
 $valor_puntos = $_POST['valor_puntos'] ?? null;
-$cantidad_oportunidades = $_POST['cantidad_oportunidades'] ?? null;
+$cantidad_oportinudades = $_POST['cantidad_oportunidades'] ?? null; // JS envía "cantidad_oportunidades"
+$link_form = trim($_POST['link_form'] ?? null);
 $id_modulo = $_POST['id_modulo'] ?? '';
 
-if (!$nombre || !$valor_puntos || !$cantidad_oportunidades || !$id_modulo) {
+if (!$nombre || !$valor_puntos || !$cantidad_oportinudades || !$id_modulo) {
     echo json_encode(["success" => false, "error" => "Datos incompletos"]);
     exit;
 }
@@ -25,13 +29,16 @@ if ($total >= 1) {
     exit;
 }
 
-// Insertar examen con los datos proporcionados
-$stmt = $conn->prepare("INSERT INTO examen (nombre, valor_puntos, cantidad_oportunidades, id_modulo) VALUES (?, ?, ?, ?)");
+// Insertar examen con los datos proporcionados, incluyendo link_form
+$stmt = $conn->prepare("
+    INSERT INTO examen (nombre, valor_puntos, cantidad_oportinudades, id_modulo, link_form) 
+    VALUES (?, ?, ?, ?, ?)
+");
 if (!$stmt) {
     echo json_encode(["success" => false, "error" => "Error en prepare: ".$conn->error]);
     exit;
 }
-$stmt->bind_param("siii", $nombre, $valor_puntos, $cantidad_oportunidades, $id_modulo);
+$stmt->bind_param("siiis", $nombre, $valor_puntos, $cantidad_oportinudades, $id_modulo, $link_form);
 
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "mensaje" => "Examen creado correctamente"]);

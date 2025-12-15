@@ -208,7 +208,12 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                                 const lista = document.getElementById("lista-examenes");
                                 if(!res.success) return lista.innerHTML = `<p>${res.error}</p>`;
                                 if(!res.examenes.length) return lista.innerHTML = `<p>No hay exámenes.</p>`;
-                                lista.innerHTML = res.examenes.map(e => `<p>${e.nombre_examen}</p>`).join("");
+                                lista.innerHTML = res.examenes.map(e => `
+                                   <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
+                                      <p>${e.nombre_examen} — Puntos: ${e.valor_puntos || 0} — Oportunidades: ${e.cantidad_oportinudades || 1}</p>
+                                      ${e.link_form ? `<a href="${e.link_form}" target="_blank" class="small-button">Abrir examen</a>` : ""}
+                                   </div>
+                                `).join("");
                             })
                             .catch(err => document.getElementById("lista-examenes").innerHTML = `<p>Error: ${err}</p>`);
                     };
@@ -349,32 +354,38 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
 
             // Enviar asistencia
             const form = document.getElementById("form-asistencia");
-            form.onsubmit = function(e) {
+            form.onsubmit = async function(e) {
                 e.preventDefault();
-                const checkedBoxes = Array.from(form.querySelectorAll('input[name="asistente"]:checked'));
-                const asistentes = checkedBoxes.map(cb => parseInt(cb.value));
 
-                if (!asistentes.length) {
+                const marcados = Array.from(form.querySelectorAll('input[name="asistente"]:checked'));
+                if (!marcados.length) {
                     alert("No se seleccionó ningún alumno");
                     return;
                 }
 
-                const formData = new FormData();
-                formData.append("id_curso", idCurso);
-                formData.append("asistentes", JSON.stringify(asistentes));
+                // Enviar uno por uno sin alterar tu estructura
+                for (const cb of marcados) {
+                    const fd = new FormData();
+                    fd.append("id_curso", idCurso);
+                    fd.append("id_rol_usuario", cb.value);
 
-                fetch("../processes/registrarAsistencia.php", { method: "POST", body: formData })
-                    .then(res => res.json())
-                    .then(res => {
-                        if (res.success) {
-                            alert( `Asistencia registrada`);
-                            cerrarModal();
-                        } else {
-                            alert("Error al registrar asistencia: " + res.error);
-                        }
-                    })
-                    .catch(err => alert("Error al conectar con el servidor: " + err));
+                    const res = await fetch("../processes/registrarAsistencia.php", {
+                        method: "POST",
+                        body: fd
+                    });
+                    const data = await res.json();
+
+                    if (!data.success) {
+                        alert("Error con " + cb.value + ": " + data.error);
+                        return;
+                    }
+                }
+
+                alert("Asistencia registrada correctamente");
+                cerrarModal();
             };
+
+
         })
         .catch(err => alert("Error al cargar alumnos: " + err));
  }
@@ -457,7 +468,6 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
     `);
 
     const listaModulos = document.getElementById("lista-modulos");
-    const btnCrearModulo = document.getElementById("btn-crear-modulo");
 
     async function cargarModulos() {
         listaModulos.innerHTML = `<p>Cargando...</p>`;
@@ -470,39 +480,42 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                 return;
             }
 
-            if (data.modulos.length >= 4) {
+            const modulos = data.modulos || [];
+
+            // Manejar límite de módulos
+            const btnCrearModulo = document.getElementById("btn-crear-modulo");
+            if (modulos.length >= 4 && btnCrearModulo) {
                 btnCrearModulo.disabled = true;
                 btnCrearModulo.innerText = "Límite de módulos alcanzado (4)";
                 btnCrearModulo.style.background = "#ccc";
             }
 
-            if (!data.modulos.length) {
+            if (!modulos.length) {
                 listaModulos.innerHTML = `<p>No hay módulos creados.</p>`;
-                return;
-            }
-
-            listaModulos.innerHTML = data.modulos.map(m => `
-                <div style="border:1px solid #ccc; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; background:#f9f9f9;">
-                    <div>
-                        <h4>${m.nombre} (${m.valor_puntos || 0} pts)</h4>
-                        <div style="background:#eee; border-radius:6px; overflow:hidden; width:200px; height:12px; margin-top:4px;">
-                            <div id="progress-${m.id_modulo}" style="background:#4caf50; height:100%; width:0%;"></div>
+            } else {
+                listaModulos.innerHTML = modulos.map(m => `
+                    <div style="border:1px solid #ccc; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; background:#f9f9f9;">
+                        <div>
+                            <h4>${m.nombre} (${m.valor_puntos || 0} pts)</h4>
+                            <div style="background:#eee; border-radius:6px; overflow:hidden; width:200px; height:12px; margin-top:4px;">
+                                <div id="progress-${m.id_modulo}" style="background:#4caf50; height:100%; width:0%;"></div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            ${m.tiene_examen 
+                                ? `<button class="small-button" disabled style="background:#ccc">Examen creado</button>` 
+                                : `<button class="small-button btn-crear-examen" data-id="${m.id_modulo}">Crear Examen</button>`
+                            }
+                            <button class="small-button btn-editar-modulo" data-id="${m.id_modulo}" data-nombre="${m.nombre}" data-puntos="${m.valor_puntos}">Editar</button>
+                            <button class="small-button danger btn-eliminar-modulo" data-id="${m.id_modulo}">Eliminar</button>
+                            <button class="small-button btn-ver-examenes" data-id="${m.id_modulo}">Ver Exámenes</button>
                         </div>
                     </div>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                        ${m.tiene_examen 
-                            ? `<button class="small-button" disabled style="background:#ccc">Examen creado</button>` 
-                            : `<button class="small-button btn-crear-examen" data-id="${m.id_modulo}">Crear Examen</button>`
-                        }
-                        <button class="small-button btn-editar-modulo" data-id="${m.id_modulo}" data-nombre="${m.nombre}" data-puntos="${m.valor_puntos}">Editar</button>
-                        <button class="small-button danger btn-eliminar-modulo" data-id="${m.id_modulo}">Eliminar</button>
-                        <button class="small-button btn-ver-examenes" data-id="${m.id_modulo}">Ver Exámenes</button>
-                    </div>
-                </div>
-            `).join("");
+                `).join("");
+            }
 
-            // Progreso por módulo
-            for (const m of data.modulos) {
+            // Cargar progreso por módulo
+            for (const m of modulos) {
                 try {
                     const r = await fetch(`../processes/obtenerProgresoModulo.php?id_modulo=${m.id_modulo}&id_usuario=${idRolUsuario}`);
                     const res = await r.json();
@@ -513,50 +526,43 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                 }
             }
 
-            asignarEventosModulos();
+            // Asignar eventos a botones
+            asignarEventosModulos(idCurso, nombreCurso, idRolUsuario, idInscripcion);
+
+            // Asignar evento para crear módulo
+            asignarEventoCrearModulo(idCurso, nombreCurso, idRolUsuario, idInscripcion);
+
         } catch (err) {
             listaModulos.innerHTML = `<p>Error al cargar módulos: ${err}</p>`;
         }
     }
 
-    function asignarEventosModulos() {
-        // Editar módulo
-        document.querySelectorAll(".btn-editar-modulo").forEach(btn => {
-            btn.onclick = () => {
-                abrirModal("Editar módulo", `
-                    <form id="form-editar-modulo" style="display:flex; flex-direction:column; gap:10px;">
-                        <label>Nombre:</label>
-                        <input type="text" name="nombre_modulo" required value="${btn.dataset.nombre}">
-                        <label>Puntos:</label>
-                        <input type="number" name="valor_puntos" required value="${btn.dataset.puntos}">
-                        <input type="hidden" name="id_modulo" value="${btn.dataset.id}">
-                        <button type="submit" class="small-button">Guardar cambios</button>
-                    </form>
-                `, () => mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion));
+    cargarModulos();
+}
 
-                document.getElementById("form-editar-modulo").onsubmit = async e => {
-                    e.preventDefault();
-                    try {
-                        const fd = new FormData(e.target);
-                        const r = await fetch("../processes/editarModulo.php", { method: "POST", body: fd });
-                        const res = await r.json();
-                        alert(res.success ? res.mensaje : res.error);
-                        mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
-                    } catch {
-                        alert("Error del servidor");
-                    }
-                };
-            };
-        });
+// ------------------------
+// Función para asignar eventos a botones de módulos existentes
+// ------------------------
+function asignarEventosModulos(idCurso, nombreCurso, idRolUsuario, idInscripcion) {
+    // Editar módulo
+    document.querySelectorAll(".btn-editar-modulo").forEach(btn => {
+        btn.onclick = () => {
+            abrirModal("Editar módulo", `
+                <form id="form-editar-modulo" style="display:flex; flex-direction:column; gap:10px;">
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre_modulo" required value="${btn.dataset.nombre}">
+                    <label>Puntos:</label>
+                    <input type="number" name="valor_puntos" required value="${btn.dataset.puntos}">
+                    <input type="hidden" name="id_modulo" value="${btn.dataset.id}">
+                    <button type="submit" class="small-button">Guardar cambios</button>
+                </form>
+            `);
 
-        // Eliminar módulo
-        document.querySelectorAll(".btn-eliminar-modulo").forEach(btn => {
-            btn.onclick = async () => {
-                if (!confirm("¿Eliminar módulo?")) return;
+            document.getElementById("form-editar-modulo").onsubmit = async e => {
+                e.preventDefault();
                 try {
-                    const fd = new FormData();
-                    fd.append("id_modulo", btn.dataset.id);
-                    const r = await fetch("../processes/eliminarModulo.php", { method: "POST", body: fd });
+                    const fd = new FormData(e.target);
+                    const r = await fetch("../processes/editarModulo.php", { method: "POST", body: fd });
                     const res = await r.json();
                     alert(res.success ? res.mensaje : res.error);
                     mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
@@ -564,138 +570,157 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                     alert("Error del servidor");
                 }
             };
-        });
+        };
+    });
 
-        // Crear examen
-        document.querySelectorAll(".btn-crear-examen").forEach(btn => {
-            btn.onclick = () => {
-                abrirModal("Crear examen", `
-                    <form id="form-crear-examen" style="display:flex; flex-direction:column; gap:10px;">
-                        <label>Nombre del examen:</label>
-                        <input type="text" name="nombre_examen" required>
-                        <label>Valor de puntos:</label>
-                        <input type="number" name="valor_puntos" min="1" required>
-                        <label>Cantidad de oportunidades:</label>
-                        <input type="number" name="cantidad_oportunidades" min="1" value="1" required>
-                        <input type="hidden" name="id_modulo" value="${btn.dataset.id}">
-                        <button type="submit" class="small-button">Crear examen</button>
-                    </form>
-                `, () => mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion));
-
-                document.getElementById("form-crear-examen").onsubmit = async e => {
-                    e.preventDefault();
-                    try {
-                        const r = await fetch("../processes/crearExamen.php", { method:"POST", body:new FormData(e.target)});
-                        const res = await r.json();
-                        alert(res.success ? res.mensaje : res.error);
-                        mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
-                    } catch {
-                        alert("Error del servidor");
-                    }
-                };
-            };
-        });
-
-        // Ver / entregar exámenes
-        document.querySelectorAll(".btn-ver-examenes").forEach(btn => {
-            btn.onclick = async () => {
-                abrirModal("Exámenes del módulo", `<div id="lista-examenes">Cargando...</div>`);
-                const idModulo = btn.dataset.id;
-                const lista = document.getElementById("lista-examenes");
-
-                try {
-                    const r = await fetch(`/proyectoTBD/processes/obtenerExamenes.php?id_modulo=${idModulo}`);
-                    const data = await r.json();
-
-                    if (!data.success || !data.examenes.length) {
-                        lista.innerHTML = "<p>No hay exámenes creados.</p>";
-                        return;
-                    }
-
-                    lista.innerHTML = data.examenes.map(e => `
-                        <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
-                            <p>${e.nombre_examen} — Puntos: ${e.valor_puntos || 0} — Oportunidades: ${e.cantidad_oportunidades || 1}</p>
-                            ${idRolUsuario === 1 ? `
-                                <label>Tu nota:</label>
-                                <input type="number" id="nota-${e.id_examen}" min="0" max="${e.valor_puntos || 0}" value="0">
-                                <button class="small-button btn-entregar-examen" data-id="${e.id_examen}" data-modulo="${idModulo}">Entregar examen</button>
-                            ` : ""}
-                        </div>
-                    `).join("");
-
-                    if (idRolUsuario === 1) {
-                        document.querySelectorAll(".btn-entregar-examen").forEach(btn => {
-                            btn.onclick = async () => {
-                                const id_examen = btn.dataset.id;
-                                const id_modulo = btn.dataset.modulo;
-                                const nota = parseFloat(document.getElementById(`nota-${id_examen}`).value);
-
-                                const fd = new FormData();
-                                fd.append("id_examen", id_examen);
-                                fd.append("id_modulo", id_modulo);
-                                fd.append("nota", nota);
-                                fd.append("id_inscripcion", idInscripcion);
-
-                                try {
-                                    const r = await fetch("../processes/entregarExamen.php", { method:"POST", body:fd });
-                                    const res = await r.json();
-                                    if (res.success) {
-                                        alert(res.mensaje + " — Progreso: " + res.progreso.toFixed(0) + "%");
-                                        const barra = document.getElementById(`progress-${id_modulo}`);
-                                        if (barra) barra.style.width = `${res.progreso}%`;
-                                    } else {
-                                        alert(res.error || "Error al entregar examen");
-                                    }
-                                } catch(err) {
-                                    console.error(err);
-                                    alert("Error del servidor");
-                                }
-                            };
-                        });
-                    }
-
-                } catch(err) {
-                    console.error(err);
-                    lista.innerHTML = "<p>Error al cargar los exámenes. Revisa la consola.</p>";
-                }
-            };
-        });
-
-        // Crear módulo
-        btnCrearModulo.onclick = () => {
-            if (btnCrearModulo.disabled) {
-                alert("No puedes crear más módulos. Límite: 4");
-                return;
+    // Eliminar módulo
+    document.querySelectorAll(".btn-eliminar-modulo").forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("¿Eliminar módulo?")) return;
+            try {
+                const fd = new FormData();
+                fd.append("id_modulo", btn.dataset.id);
+                const r = await fetch("../processes/eliminarModulo.php", { method: "POST", body: fd });
+                const res = await r.json();
+                alert(res.success ? res.mensaje : res.error);
+                mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
+            } catch {
+                alert("Error del servidor");
             }
+        };
+    });
 
-            abrirModal("Crear módulo", `
-                <form id="form-crear-modulo" style="display:flex; flex-direction:column; gap:10px;">
-                    <label>Nombre módulo:</label>
-                    <input type="text" name="nombre_modulo" required>
-                    <label>Valor puntos:</label>
-                    <input type="number" name="valor_puntos" required>
-                    <input type="hidden" name="id_curso" value="${idCurso}">
-                    <button type="submit" class="small-button">Crear módulo</button>
+
+    // Crear examen
+    document.querySelectorAll(".btn-crear-examen").forEach(btn => {
+        btn.onclick = () => {
+            const idModulo = btn.dataset.id; // ✅ obtenemos el id del módulo
+            abrirModal("Crear examen", `
+                <form id="form-crear-examen" style="display:flex; flex-direction:column; gap:10px;">
+                    <label>Nombre del examen:</label>
+                    <input type="text" name="nombre_examen" required>
+                    <label>Valor de puntos:</label>
+                    <input type="number" name="valor_puntos" min="1" required>
+                    <label>Cantidad de oportunidades:</label>
+                    <input type="number" name="cantidad_oportunidades" min="1" value="1" required>
+                    <label>Link de Google Form:</label>
+                    <input type="url" name="link_form" placeholder="https://docs.google.com/forms/..." >
+
+                    <input type="hidden" name="id_modulo" value="${idModulo}">
+                    <button type="submit" class="small-button">Crear examen</button>
                 </form>
-            `, () => mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion));
+            `);
 
-            document.getElementById("form-crear-modulo").onsubmit = async e => {
+            // ⚡ Asignamos el submit DESPUÉS de crear el modal
+            const form = document.getElementById("form-crear-examen");
+            form.onsubmit = async e => {
                 e.preventDefault();
+
+                // Verificamos que el input hidden exista y tenga valor
+                const inputModulo = form.querySelector('input[name="id_modulo"]');
+                if (!inputModulo || !inputModulo.value) {
+                    alert("Error: no se detectó el ID del módulo.");
+                    return;
+                }
+
+                const fd = new FormData(form);
+
+                // Depuración: ver qué datos se envían
+                console.log("FormData enviada:");
+                for (let [key, value] of fd.entries()) console.log(key, value);
+
                 try {
-                    const r = await fetch("../processes/agregarModulo.php", { method:"POST", body:new FormData(e.target)});
-                    const res = await r.json();
-                    alert(res.success ? "Módulo creado" : res.error);
-                    mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
-                } catch {
-                    alert("Error del servidor");
+                    const res = await fetch("../processes/crearExamen.php", {
+                        method: "POST",
+                        body: fd
+                    });
+                    const data = await res.json();
+                    alert(data.success ? "Examen creado correctamente" : data.error);
+                    if (data.success) {
+                        cerrarModal();
+                        mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error del servidor al crear examen");
                 }
             };
         };
-    }
+    });    
+  
+  
+ // --- Ver exámenes ---
+ document.querySelectorAll(".btn-ver-examenes").forEach(btn => {
+    btn.onclick = async () => {
+        abrirModal("Exámenes del módulo", `<div id="lista-examenes">Cargando...</div>`);
+        const idModulo = btn.dataset.id;
+        const lista = document.getElementById("lista-examenes");
 
-    // Carga inicial
-    cargarModulos();
+        try {
+            const r = await fetch(`../processes/obtenerExamenes.php?id_modulo=${idModulo}`);
+            const data = await r.json();
+
+            if (!data.success || !data.examenes.length) {
+                lista.innerHTML = "<p>No hay exámenes creados.</p>";
+                return;
+            }
+
+            // Aquí es donde generas el HTML de la lista de exámenes
+            lista.innerHTML = data.examenes.map(e => `
+                <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
+                    <p>${e.nombre_examen} — Puntos: ${e.valor_puntos || 0} — Oportunidades: ${e.cantidad_oportinudades || 1}</p>
+                    ${e.link_form ? `<a href="${e.link_form}" target="_blank" class="small-button">Abrir examen</a>` : ""}
+                </div>
+            `).join("");
+
+        } catch(err) {
+            console.error(err);
+            lista.innerHTML = "<p>Error al cargar los exámenes. Revisa la consola.</p>";
+        }
+    };
+ });
+
+
+}
+
+// ------------------------
+// Crear módulo - evento independiente
+// ------------------------
+function asignarEventoCrearModulo(idCurso, nombreCurso, idRolUsuario, idInscripcion) {
+    const btnCrearModulo = document.getElementById("btn-crear-modulo");
+    if (!btnCrearModulo) return;
+
+    btnCrearModulo.onclick = () => {
+        if (btnCrearModulo.disabled) {
+            alert("No puedes crear más módulos. Límite: 4");
+            return;
+        }
+
+        abrirModal("Crear módulo", `
+            <form id="form-crear-modulo" style="display:flex; flex-direction:column; gap:10px;">
+                <label>Nombre módulo:</label>
+                <input type="text" name="nombre_modulo" required>
+                <label>Valor puntos:</label>
+                <input type="number" name="valor_puntos" required>
+                <input type="hidden" name="id_curso" value="${idCurso}">
+                <button type="submit" class="small-button">Crear módulo</button>
+            </form>
+        `);
+
+        document.getElementById("form-crear-modulo").onsubmit = async e => {
+            e.preventDefault();
+            try {
+                const r = await fetch("../processes/agregarModulo.php", { method:"POST", body:new FormData(e.target)});
+                const res = await r.json();
+                alert(res.success ? "Módulo creado" : res.error);
+                mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion);
+            } catch {
+                alert("Error del servidor");
+            }
+        };
+    };
  }
+
 
 
 

@@ -16,8 +16,8 @@ if (!$id_modulo) {
     exit;
 }
 
-// Consulta segura
-$sql = "SELECT id_examen, nombre AS nombre_examen, valor_puntos, cantidad_oportunidades
+// Consulta segura incluyendo link_form
+$sql = "SELECT id_examen, nombre AS nombre_examen, valor_puntos, cantidad_oportinudades, link_form
         FROM examen
         WHERE id_modulo = ?";
 $stmt = $conn->prepare($sql);
@@ -48,7 +48,8 @@ while ($row = $result->fetch_assoc()) {
         "id_examen" => (int)$row["id_examen"],
         "nombre_examen" => $row["nombre_examen"],
         "valor_puntos" => isset($row["valor_puntos"]) ? (float)$row["valor_puntos"] : 0,
-        "cantidad_oportunidades" => isset($row["cantidad_oportunidades"]) ? (int)$row["cantidad_oportunidades"] : 1
+        "cantidad_oportinudades" => isset($row["cantidad_oportinudades"]) ? (int)$row["cantidad_oportinudades"] : 1,
+        "link_form" => $row["link_form"] ?? null
     ];
 }
 
@@ -58,3 +59,4 @@ echo json_encode([
     "examenes" => $examenes
 ]);
 exit;
+?>
