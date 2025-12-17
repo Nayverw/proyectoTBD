@@ -79,7 +79,7 @@ if ($stmt->execute()) {
    $sqlBit = "
 INSERT INTO bitacora 
 (accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
-VALUES (?, ?, ?, ?, NOW(), 2)
+VALUES (?, ?, ?, ?, NOW(), 0)
 ";
 $stmtBit = $conn->prepare($sqlBit);
 $stmtBit->bind_param("sssi", 
@@ -100,7 +100,7 @@ $stmtBit->close();
  $sqlBitPts = "
 INSERT INTO bitacora 
 (accion, descripcion, tabla_afectada, id_rol_usuario, fecha, id_tipo_bitacora)
-VALUES (Gano puntos, Usuario gano puntos, gestionPuntos, ?, NOW(), 4)
+VALUES (Gano puntos, Usuario gano puntos, gestionPuntos, ?, NOW(), 0)
 ";
 $stmtBitPts = $conn->prepare($sqlBitPts);
 $stmtBitPts->bind_param("i", 
