@@ -129,7 +129,9 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         "Reporte de actividad": "./ReporteDocenteActividad.js",
         "Reporte de examenes": "./ReporteDocenteExamen.js",
         "Reporte de certificaciones emitidas": "./ReporteCertificacionEmitida.js",
-        "Reporte de saldos": "./ReportePuntoSaldo.js"
+        "Reporte de saldos": "./ReportePuntoSaldo.js",
+        "Reporte de raking de estudiantes": "./ReporteRecompensaObtenida.js",
+        "Reporte de recompensas canjeadas": "./ReporteRecompensaCanjeada.js"
     };
 
     // ====== EVENTOS DE BOTONES PRINCIPALES ======
