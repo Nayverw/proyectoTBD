@@ -123,26 +123,27 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario, rolUsuario }) {
                     } else {
                         btnModal.disabled = false;
                         btnModal.textContent = "Inscribirme";
-                        btnModal.onclick = () => abrirModalPago(curso.id_curso, curso.precio);
+                        btnModal.onclick = () => abrirModalPago(curso.id_curso, curso.precio, curso.nombre_curso);
                     }
                     modalInfo.style.display = "flex";
                 };
 
                 // Botón inscribirse directo
                 const btnCard = card.querySelector(".btn-inscribir");
-                if(cupoDisponible>0) btnCard.onclick = () => abrirModalPago(curso.id_curso, curso.precio);
+                if(cupoDisponible>0) btnCard.onclick = () => abrirModalPago(curso.id_curso, curso.precio, curso.nombre_curso);
 
                 lista.appendChild(card);
             });
         })
         .catch(err => { lista.innerHTML="<p>Error al cargar cursos.</p>"; console.error(err); });
 
-    function abrirModalPago(idCurso, precio){
-        modalInfo.style.display="none";
-        document.getElementById("pago-id-curso").value = idCurso;
-        document.getElementById("pago-monto").value = precio;
-        document.getElementById("pago-tipo").value = "";
-        modalPago.style.display = "flex";
+    function abrirModalPago(idCurso, precio,nombreCurso){
+     modalInfo.style.display="none";
+     document.getElementById("pago-id-curso").value = idCurso;
+     document.getElementById("pago-monto").value = precio;
+     document.getElementById("pago-tipo").value = "";
+     modalPago.dataset.nombreCurso = nombreCurso; 
+     modalPago.style.display = "flex";
     }
 
     document.getElementById("form-pago").onsubmit = function(e){
@@ -168,11 +169,13 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario, rolUsuario }) {
 
             const v=data.voucher;
             document.getElementById("voucher-detalle").innerHTML = `
-                <p><strong>Curso:</strong> ${v.curso}</p>
+                <p><strong>Curso:</strong> ${modalPago.dataset.nombreCurso}</p>
                 <p><strong>Docente:</strong> ${v.docente}</p>
                 <p><strong>Monto pagado:</strong> ${v.monto_pagado}</p>
                 <p><strong>Tipo de pago:</strong> ${v.tipo_pago}</p>
                 <p><strong>Fecha:</strong> ${v.fecha_pago}</p>
+                
+
             `;
             modalPago.style.display="none";
             modalVoucher.style.display="flex";

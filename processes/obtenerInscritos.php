@@ -27,7 +27,8 @@ $res = $stmt->get_result();
 
 $alumnos = [];
 while ($row = $res->fetch_assoc()) {
-    $alumnos[] = $row;
+    $alumnos[] = $row; // Manteniendo la misma estructura: id_rol_usuario, nombre, correo
 }
 
 echo json_encode(["success" => true, "alumnos" => $alumnos]);
+?>

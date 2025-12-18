@@ -63,18 +63,20 @@ export function mostrarPagos({ idRolUsuario, nombreUsuario }) {
                 `;
 
                 // Mostrar modal voucher
-                card.querySelector(".btn-ver-voucher").onclick = () => {
-                    const voucherDetalle = document.getElementById("voucher-detalle");
-                    voucherDetalle.innerHTML = `
-                        <p><strong>ID Pago:</strong> ${pago.id_pago}</p>
-                        <p><strong>Curso:</strong> ${pago.curso}</p>
-                        <p><strong>Docente:</strong> ${pago.docente}</p>
-                        <p><strong>Monto pagado:</strong> ${pago.monto_pagado}</p>
-                        <p><strong>Tipo de pago:</strong> ${pago.tipo_pago}</p>
-                        <p><strong>Fecha:</strong> ${pago.fecha_pago}</p>
-                    `;
-                    modalVoucher.style.display = "flex";
-                };
+                // Mostrar modal voucher
+ card.querySelector(".btn-ver-voucher").onclick = () => {
+    const voucherDetalle = document.getElementById("voucher-detalle");
+    voucherDetalle.innerHTML = `
+        <p><strong>ID Pago:</strong> ${pago.id_pago}</p>
+        <p><strong>Curso:</strong> ${pago.curso}</p>
+        <p><strong>Docente:</strong> ${pago.docente}</p>
+        <p><strong>Monto pagado:</strong> ${pago.monto_pagado}</p>
+        <p><strong>Tipo de pago:</strong> ${pago.tipo_pago}</p>
+        <p><strong>Fecha:</strong> ${pago.fecha_pago}</p>
+    `;
+    modalVoucher.style.display = "flex";
+ };
+
 
                 lista.appendChild(card);
             });

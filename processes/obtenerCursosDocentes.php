@@ -10,33 +10,36 @@ if (!isset($_GET['id_docente'])) {
 $id_docente = intval($_GET['id_docente']);
 
 try {
-    $sql = "
-        SELECT c.id_curso, c.preciopuntos, c.estado, c.duracion, c.cupo, c.id_tipo_curso,
-               t.nombre_curso
-        FROM curso c
-        LEFT JOIN tipo_curso t ON t.id_tipo_curso = c.id_tipo_curso
-        WHERE c.id_docente = ?
-    ";
-    $stmt = $conn->prepare($sql);
+    // 1️⃣ Traer cursos del docente
+    $stmt = $conn->prepare("SELECT * FROM curso WHERE id_docente = ?");
     $stmt->bind_param("i", $id_docente);
     $stmt->execute();
     $res = $stmt->get_result();
-
+    
     $cursos = [];
     while ($row = $res->fetch_assoc()) {
-        $cursos[] = [
-            "id_curso" => $row['id_curso'],
-            "nombre_curso" => $row['nombre_curso'] ?? "Sin nombre",
-            "preciopuntos" => $row['preciopuntos'],
-            "estado" => $row['estado'],
-            "duracion" => $row['duracion'],
-            "cupo" => $row['cupo'],
-            "id_tipo_curso" => $row['id_tipo_curso']
-        ];
+        $cursos[$row['id_tipo_curso']][] = $row;
     }
 
-    echo json_encode(["success" => true, "cursos" => $cursos]);
+    // 2️⃣ Traer todos los tipos de curso
+    $resTipos = $conn->query("SELECT * FROM tipo_curso");
+    $tipos = [];
+    while ($t = $resTipos->fetch_assoc()) {
+        $tipos[$t['id_tipo_curso']] = $t;
+    }
+
+    // 3️⃣ Combinar nombre del tipo de curso en los cursos
+    $resultado = [];
+    foreach ($cursos as $id_tipo => $lista) {
+        foreach ($lista as $curso) {
+            $curso['nombre_curso'] = $tipos[$id_tipo]['nombre_curso'] ?? "Sin nombre";
+            $curso['curso_extra'] = $tipos[$id_tipo]['curso_extra'] ?? "0";
+            $resultado[] = $curso;
+        }
+    }
+
+    echo json_encode(["success" => true, "cursos" => $resultado]);
+
 } catch(Exception $e) {
     echo json_encode(["success" => false, "error" => $e->getMessage()]);
 }
-?>

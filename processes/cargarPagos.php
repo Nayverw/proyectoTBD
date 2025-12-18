@@ -10,11 +10,20 @@ if(!$id_rol_usuario){
 }
 
 $sql = "
-SELECT p.id_pago, i.id_curso, p.monto_pagado, p.tipo_pago, p.fecha_pago,
-       u.nombres, u.apellidos, c.id_curso, c.preciopuntos
+SELECT 
+    p.id_pago, 
+    i.id_curso, 
+    p.monto_pagado, 
+    p.tipo_pago, 
+    p.fecha_pago,
+    u.nombres, 
+    u.apellidos, 
+    c.preciopuntos,
+    tc.nombre_curso
 FROM pago p
 JOIN inscripcion i ON p.id_inscripcion = i.id_inscripcion
 JOIN curso c ON i.id_curso = c.id_curso
+JOIN tipo_curso tc ON tc.id_tipo_curso = c.id_tipo_curso
 JOIN rol_usuario ru ON c.id_docente = ru.id_rol_usuario
 JOIN usuario u ON ru.id_usuario = u.id_usuario
 WHERE i.id_rol_usuario = ?
@@ -30,7 +39,7 @@ $pagos = [];
 while($row=$res->fetch_assoc()){
     $pagos[]=[
         "id_pago"=>$row['id_pago'],
-        "curso"=>"Curso ID: ".$row['id_curso'], // reemplaza si hay nombre
+        "curso"=>$row['nombre_curso'],      // ahora se muestra el nombre correcto
         "precio"=>$row['preciopuntos'],
         "docente"=>trim($row['nombres']." ".$row['apellidos']),
         "fecha_pago"=>$row['fecha_pago'],

@@ -187,44 +187,107 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                         </div>
                     `).join("");
                     
-                    // --- Cargar progreso por módulo ---
-                data.modulos.forEach(m => {
-                    fetch(`../processes/obtenerProgresoModulo.php?id_modulo=${m.id_modulo}&id_usuario=${idRolUsuario}`)
-                        .then(r => r.json())
-                        .then(res => {
-                            const prog = res.success && res.progreso != null ? res.progreso : 0;
-                            const barra = document.getElementById(`progress-${m.id_modulo}`);
-                            if (barra) barra.style.width = `${prog}%`;
-                        });
-                });
+                
 
                 // --- Ver exámenes ---
                 document.querySelectorAll(".btn-ver-examenes").forEach(btn => {
                     btn.onclick = () => {
                         abrirModal("Exámenes del módulo", `<div id="lista-examenes">Cargando...</div>`);
-                        fetch(`../processes/obtenerExamenes.php?id_modulo=${btn.dataset.id}`)
+                        fetch(`../processes/obtenerExamenes.php?id_modulo=${btn.dataset.id}&id_usuario=${idRolUsuario}`)
                             .then(r=>r.json())
                             .then(res=>{
                                 const lista = document.getElementById("lista-examenes");
                                 if(!res.success) return lista.innerHTML = `<p>${res.error}</p>`;
                                 if(!res.examenes.length) return lista.innerHTML = `<p>No hay exámenes.</p>`;
+                                
                                 lista.innerHTML = res.examenes.map(e => `
-                                   <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
+                                  <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
                                       <p>${e.nombre_examen} — Puntos: ${e.valor_puntos || 0} — Oportunidades: ${e.cantidad_oportinudades || 1}</p>
-                                      ${e.link_form ? `<a href="${e.link_form}" target="_blank" class="small-button">Abrir examen</a>` : ""}
-                                   </div>
+                                      ${e.realizado 
+                                          ? `<p><strong>Nota obtenida:</strong> ${e.nota || "0"}</p>
+                                             <button 
+                                                 class="small-button btn-examen-realizado"
+                                                 disabled
+                                                 style="
+                                                     background:#ccc;
+                                                     color:#666;
+                                                     cursor:not-allowed;
+                                                     border:1px solid #aaa;
+                                                 ">
+                                                 ✔ Examen realizado
+                                             </button>
+                                              `
+                                              : `
+                                                <button 
+                                                     class="small-button btn-realizar-examen" 
+                                                     data-examen="${e.id_examen}" 
+                                                     data-modulo="${btn.dataset.id}"
+                                                     data-link="${e.link_form}">Realizar examen</button>`
+                                       }
+                                  </div>
                                 `).join("");
+
                             })
                             .catch(err => document.getElementById("lista-examenes").innerHTML = `<p>Error: ${err}</p>`);
                     };
                 });
 
+ document.addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("btn-realizar-examen")) return;
+
+    const btn = e.target;
+    const idExamen = btn.dataset.examen;
+    const idModulo = btn.dataset.modulo;
+    const link = btn.dataset.link;
+  
+    // ✅ Validar link
+    if (!link || link === "null" || link.trim() === "") {
+        alert("Este examen no tiene enlace válido");
+        return;
+    }
+    try {
+        // Abrir Google Form en nueva pestaña
+        window.open(link, "_blank");
+
+        // Marcar examen como realizado en la base
+        const fd = new FormData();
+        fd.append("id_usuario", idRolUsuario);
+        fd.append("id_examen", idExamen);
+        fd.append("id_modulo", idModulo);
+
+        const res = await fetch("../processes/completarExamen.php", {
+            method: "POST",
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+            alert("Error al registrar examen: " + data.error);
+            return;
+        }
+
+        // ✅ Actualizar botón
+        btn.disabled = true;
+        btn.innerText = "✔ Examen realizado";
+        btn.style.background = "#ccc";
+        btn.style.color = "#666";
+        btn.style.cursor = "not-allowed";
+
+    } catch (err) {
+        console.error(err);
+        alert("Error al completar el examen");
+    }
+ });
+
+                
+ 
+        
+
             })
             .catch(err => listaModulos.innerHTML = `<p>Error al cargar módulos: ${err}</p>`);
         }
-
-       
-
+ 
         // Inicializa la carga de módulos
         cargarModulos();
     }
@@ -342,7 +405,7 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
                             <li>
                                 <label>
                                     <input type="checkbox" name="asistente" value="${a.id_rol_usuario}">
-                                    ${a.nombres} ${a.apellidos} — ${a.correo} — progreso: ${a.progreso || 0}%
+                                    ${a.nombre} — ${a.correo} — progreso: ${a.progreso || 0}%
                                 </label>
                             </li>
                         `).join("")}
@@ -459,6 +522,97 @@ export function iniciar({ idRolUsuario, nombreUsuario }) {
         })
         .catch(err => abrirModal("Error", `<p>No se pudo cargar aulas y horarios: ${err}</p>`));
     }
+
+ function mostrarFormularioEditarCurso(curso) {
+    abrirModal("Editar curso", "<p>Cargando...</p>");
+
+    Promise.all([
+        fetch("../processes/obtenerHorarios.php").then(r => r.json()),
+        fetch("../processes/obtenerAulas.php").then(r => r.json())
+    ]).then(([horariosData, aulasData]) => {
+        const horarios = horariosData.horarios || [];
+        const aulas = aulasData.aulas || [];
+
+        // Opciones de horarios, seleccionando el id_horario actual
+        const opcionesHorarios = horarios.map(h => `
+            <option value="${h.id_horario}" ${curso.id_horario == h.id_horario ? "selected" : ""}>
+                ${h.dia} - ${h.hora}
+            </option>
+        `).join("");
+
+        // Opciones de aulas
+        const opcionesAulas = aulas.map(a => `
+            <option value="${a.id_aula}" ${curso.id_aula == a.id_aula ? "selected" : ""}>
+                ${a.nombre} - ${a.ubicacion}
+            </option>
+        `).join("");
+
+        abrirModal("Editar curso", `
+            <form id="form-editar-curso" style="display:flex; flex-direction:column; gap:10px;">
+
+                <input type="hidden" name="id_curso" value="${curso.id_curso}">
+                <input type="hidden" name="id_tipo_curso" value="${curso.id_tipo_curso}">
+                <input type="hidden" name="id_docente" value="${curso.id_docente}">
+
+                <label>Nombre del curso:</label>
+                <input type="text" name="nombre_curso" required value="${curso.nombre_curso || ''}">
+
+                <label>Curso extra:</label>
+                <select name="curso_extra">
+                    <option value="1" ${curso.curso_extra == 1 ? "selected" : ""}>SI</option>
+                    <option value="0" ${curso.curso_extra == 0 ? "selected" : ""}>NO</option>
+                </select>
+
+                <label>Precio / Puntos:</label>
+                <input type="number" step="0.01" name="preciopuntos" value="${curso.preciopuntos || 0}" required>
+
+                <label>Duración (hrs):</label>
+                <input type="number" step="0.1" name="duracion" value="${curso.duracion || 0}" required>
+
+                <label>Cupo:</label>
+                <input type="number" name="cupo" value="${curso.cupo || 0}" required>
+
+
+                <label>Estado:</label>
+                <select name="estado">
+                    <option value="ACTIVO" ${curso.estado === "ACTIVO" ? "selected" : ""}>ACTIVO</option>
+                    <option value="INACTIVO" ${curso.estado === "INACTIVO" ? "selected" : ""}>INACTIVO</option>
+                </select>
+
+                <button type="submit" class="small-button">Guardar cambios</button>
+            </form>
+        `);
+
+        // 📤 SUBMIT
+        document.getElementById("form-editar-curso").onsubmit = async e => {
+            e.preventDefault();
+
+            const fd = new FormData(e.target);
+
+            // Enviar directamente id_horario en lugar de dia/hora
+            const r = await fetch("../processes/editarCursoDocente.php", {
+                method: "POST",
+                body: fd
+            });
+
+            const data = await r.json();
+            alert(data.mensaje);
+
+            if (data.success) {
+                cerrarModal();
+                cargarCursos();
+            }
+        };
+    });
+ }
+
+
+
+
+
+
+
+    
 
  function mostrarModuloCurso(idCurso, nombreCurso, idRolUsuario, idInscripcion) {
 
@@ -657,7 +811,7 @@ function asignarEventosModulos(idCurso, nombreCurso, idRolUsuario, idInscripcion
         const lista = document.getElementById("lista-examenes");
 
         try {
-            const r = await fetch(`../processes/obtenerExamenes.php?id_modulo=${idModulo}`);
+            const r = await fetch(`../processes/obtenerExamenes.php?id_modulo=${idModulo}&id_usuario=${idRolUsuario}`);
             const data = await r.json();
 
             if (!data.success || !data.examenes.length) {
@@ -667,11 +821,78 @@ function asignarEventosModulos(idCurso, nombreCurso, idRolUsuario, idInscripcion
 
             // Aquí es donde generas el HTML de la lista de exámenes
             lista.innerHTML = data.examenes.map(e => `
-                <div style="border:1px solid #ccc; padding:5px; margin-bottom:5px;">
-                    <p>${e.nombre_examen} — Puntos: ${e.valor_puntos || 0} — Oportunidades: ${e.cantidad_oportinudades || 1}</p>
-                    ${e.link_form ? `<a href="${e.link_form}" target="_blank" class="small-button">Abrir examen</a>` : ""}
-                </div>
-            `).join("");
+    <div style="border:1px solid #ccc; padding:6px; margin-bottom:6px;">
+        <p>
+            <strong>${e.nombre_examen}</strong><br>
+            Puntos: ${e.valor_puntos || 0} |
+            Oportunidades: ${e.cantidad_oportinudades || 1}
+        </p>
+
+        <div style="display:flex; gap:6px;">
+            ${e.link_form 
+                ? `<a href="${e.link_form}" target="_blank" class="small-button">Abrir examen</a>` 
+                : ""
+            }
+
+            <button 
+                class="small-button btn-info-examen"
+                data-id="${e.id_examen}"
+                data-nombre="${e.nombre_examen}">
+                Más información
+            </button>
+        </div>
+    </div>
+ `).join("");
+
+ document.querySelectorAll(".btn-info-examen").forEach(btn => {
+    btn.onclick = async () => {
+        const idExamen = btn.dataset.id;
+        const nombre = btn.dataset.nombre;
+
+        abrirModal(
+            `Resultados del examen: ${nombre}`,
+            `<div id="lista-resultados">Cargando...</div>`
+        );
+
+        try {
+            const r = await fetch(`../processes/obtenerResultadosExamen.php?id_examen=${idExamen}`);
+            const data = await r.json();
+
+            const cont = document.getElementById("lista-resultados");
+
+            if (!data.success || !data.resultados.length) {
+                cont.innerHTML = "<p>Ningún estudiante ha realizado este examen.</p>";
+                return;
+            }
+
+            cont.innerHTML = `
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <th style="border-bottom:1px solid #ccc;">Estudiante</th>
+                        <th style="border-bottom:1px solid #ccc;">Nota</th>
+                        <th style="border-bottom:1px solid #ccc;">Estado</th>
+                    </tr>
+                    ${data.resultados.map(r => `
+                        <tr>
+                            <td>${r.nombres} ${r.apellidos}</td>
+                            <td style="text-align:center;">${r.nota ?? "-"}</td>
+                            <td style="text-align:center;">${r.estado}</td>
+                        </tr>
+                    `).join("")}
+                </table>
+            `;
+        } catch (err) {
+            console.error(err);
+            document.getElementById("lista-resultados").innerHTML =
+                "<p>Error al cargar resultados.</p>";
+        }
+    };
+ });
+
+
+
+
+
 
         } catch(err) {
             console.error(err);
