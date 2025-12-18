@@ -8,7 +8,7 @@ export function mostrarInformacionSeminario(idRolUsuario, idSeminario) {
     <div id="infoSeminario" style="
       width: 78%;
       min-height: 360px;
-      background: #247580;
+      background: #5C62E6;
       margin: 25px auto;
       padding: 20px;
       border-radius: 14px;
@@ -58,19 +58,7 @@ export function mostrarInformacionSeminario(idRolUsuario, idSeminario) {
 
           <!-- BOTÓN VOLVER -->
           <button id="btnVolverSeminarios" 
-            style="
-              background-color: #06B897;
-              color: white;
-              border: none;
-              border-radius: 20px;
-              padding: 10px 25px;
-              font-size: 15px;
-              cursor: pointer;
-              transition: .2s;
-            "
-            onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
-            onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'"
-          >
+            class="menu-btn" style="color:white">
             Volver
           </button>
 

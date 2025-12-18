@@ -7,7 +7,7 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
     <div id="infoSeminario" style="
       width: 78%;
       min-height: 360px;
-      background: #247580;
+      background: #5C62E6;
       margin: 25px auto;
       padding: 20px;
       border-radius: 14px;
@@ -53,36 +53,14 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
 
         <div style="margin-top: 25px; display:flex; justify-content:center; gap:15px;">
           <button id="btnVolverSeminarios" 
-            style="
-              background-color: #06B897;
-              color: white;
-              border: none;
-              border-radius: 20px;
-              padding: 10px 25px;
-              font-size: 15px;
-              cursor: pointer;
-              transition: .2s;
-            "
-            onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
-            onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'"
+            class="menu-btn" style="color:white"
           >
             Volver
           </button>
 
           <!-- BOTÓN CANJEAR SIEMPRE VISIBLE -->
           <button id="btnCanjearSeminario"
-            style="
-              background-color: #06B897;
-              color: white;
-              border: none;
-              border-radius: 20px;
-              padding: 10px 25px;
-              font-size: 15px;
-              cursor: pointer;
-              transition: .2s;
-            "
-            onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
-            onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'"
+            class="menu-btn" style="color:white"
           >
             Canjear
           </button>
@@ -117,7 +95,7 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
 
           modal.innerHTML = `
             <div style="
-              background-color: #13F2C8;
+              background-color: #864ebfff;
               padding: 20px;
               border-radius: 12px;
               width: 350px;
@@ -135,8 +113,7 @@ export function mostrarInformacionSeminarioCanjear(idRolUsuario, idSeminario) {
               ">X</span>
 
               <p style="font-size:16px; margin-bottom:20px;">
-                ¿Estás seguro que deseas canjear <strong>${sem.nombre}</strong> por 
-                <strong>${data.codigo}</strong> puntos?
+                ¿Estás seguro que deseas canjear <strong>${sem.nombre}</strong>?
               </p>
 
               <div style="display:flex; gap:15px; justify-content:center;">

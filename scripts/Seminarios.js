@@ -18,7 +18,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background-color: #247580;
+      background-color: #5C62E6;
     ">
 
       <h2 style="text-align:center; color:white; margin-bottom:15px;">
@@ -29,7 +29,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       <div id="contenedorSuperior" style="
         width: 100%;
         height: 50%;
-        background: #13F2C8;
+        background: #8083FF;
         border-radius: 10px;
         margin-bottom: 10px;
         padding: 10px;
@@ -50,7 +50,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       <div id="contenedorInferiorSeminarios" style="
         width: 100%;
         height: 50%;
-        background: #13F2C8;
+        background: #8083FF;
         border-radius: 10px;
         padding: 10px;
         display: flex;
@@ -84,7 +84,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         item.style = `
           min-width: 120px;
           height: 120px;
-          background: #B3FFFC;
+          background: #84C3F5;
           border-radius: 10px;
           padding: 10px;
           display: flex;
@@ -96,7 +96,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         `;
 
         item.innerHTML = `
-          <strong style="font-size:14px; color:black;">${s.nombre}</strong>
+          <strong style="font-size:14px; color:white;">${s.nombre}</strong>
           <img src="../img/seminario.jpg" alt="${s.nombre}"
             style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
         `;
@@ -129,7 +129,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         item.style = `
           min-width: 120px;
           height: 120px;
-          background: #B3FFFC;
+          background: #84C3F5;
           border-radius: 10px;
           padding: 10px;
           display: flex;
@@ -141,7 +141,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         `;
 
         item.innerHTML = `
-          <strong style="font-size:14px; color:black;">${s.nombre}</strong>
+          <strong style="font-size:14px; color:white;">${s.nombre}</strong>
           <img src="../img/seminario.jpg" alt="${s.nombre}"
             style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
         `;

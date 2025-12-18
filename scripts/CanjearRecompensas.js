@@ -17,12 +17,12 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background-color: #247580;
+      background-color: #5C62E6;
     ">
       <div id="contenedor1" style="
         width: 100%;
         height: 50%;
-        background: #13F2C8;
+        background: #8083FF;
         border-radius: 10px;
         margin-bottom: 10px;
         padding: 10px;
@@ -41,7 +41,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         padding: 18px;
         box-sizing: border-box;
         border-radius: 10px;
-        background-color: #13F2C8;
+        background-color: #8083FF;
         overflow-y: auto;
       ">
         <h3 style="color:white; margin:0;">No seleccionó ninguna Recompensa</h3>
@@ -71,7 +71,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         item.style = `
           min-width: 120px;
           height: 120px;
-          background: #B3FFFC;
+          background: #84C3F5;
           border-radius: 10px;
           padding: 10px;
           display: flex;
@@ -93,7 +93,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
         }
 
         item.innerHTML = `
-          <strong style="font-size:14px; color:black;">${r.nombre}</strong>
+          <strong style="font-size:14px; color:white;">${r.nombre}</strong>
           <img src="${imagenSrc}" alt="${r.nombre}" 
             style="width:70px; height:70px; object-fit:cover; border-radius:5px;">
         `;
@@ -144,19 +144,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
                 <p><strong>Precio:</strong> ${r.precio_puntos}</p>
                 <p><strong>Descuento:</strong> ${r.descuento}%</p>
 
-                <button id="btnCanjear" style="
-                  background-color: #06B897;
-                  color: white;
-                  border: none;
-                  border-radius: 20px;
-                  padding: 10px 0;
-                  font-size: 15px;
-                  cursor: pointer;
-                  transition: .2s;
-                  width: 100%;
-                " 
-                onmouseover="this.style.backgroundColor='#04a283'; this.style.transform='scale(1.05)'"
-                onmouseout="this.style.backgroundColor='#06B897'; this.style.transform='scale(1)'">
+                <button id="btnCanjear" class="menu-btn" style="color:white">
                   Canjear
                 </button>
               </div>
@@ -182,7 +170,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
 
             modal.innerHTML = `
               <div style="
-                background-color: #13F2C8;
+                background-color: #864ebfff;
                 padding: 20px;
                 border-radius: 12px;
                 width: 350px;
@@ -256,7 +244,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
               if (data.estado === "ok") {
                 modal.innerHTML = `
                   <div style="
-                    background-color:#13F2C8;
+                    background-color: #864ebfff;
                     padding:20px;
                     border-radius:12px;
                     width:350px;
@@ -292,7 +280,7 @@ export function mostrarContenido({ idRolUsuario, nombreUsuario }) {
               else if (data.estado === "insuficientes") {
                 modal.innerHTML = `
                   <div style="
-                    background-color:#13F2C8;
+                    background-color: #864ebfff;
                     padding:20px;
                     border-radius:12px;
                     width:350px;
